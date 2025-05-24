@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.my_app_project.R
 import com.example.my_app_project.domain.model.Categoria
 
+
 class CategoriasAdapter : ListAdapter<Categoria, CategoriasAdapter.CategoriaViewHolder>(DiffCallback()) {
 
 
@@ -45,3 +46,6 @@ class CategoriasAdapter : ListAdapter<Categoria, CategoriasAdapter.CategoriaView
         }
     }
 }
+
+
+

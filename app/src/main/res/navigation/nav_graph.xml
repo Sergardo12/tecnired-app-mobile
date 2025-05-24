@@ -6,26 +6,26 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.my_app_project.ui.fragment.home.HomeFragment"
+        android:name="com.example.my_app_project.ui.fragment.HomeFragment"
         android:label="Inicio" />
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.my_app_project.ui.fragment.search.SearchFragment"
+        android:name="com.example.my_app_project.ui.fragment.SearchFragment"
         android:label="Buscar" />
 
     <fragment
         android:id="@+id/historyFragment"
-        android:name="com.example.my_app_project.ui.fragment.history.HistoryFragment"
+        android:name="com.example.my_app_project.ui.fragment.HistoryFragment"
         android:label="Historial" />
 
     <fragment
         android:id="@+id/notificationsFragment"
-        android:name="com.example.my_app_project.ui.fragment.notifications.NotificationsFragment"
+        android:name="com.example.my_app_project.ui.fragment.NotificationsFragment"
         android:label="Notificaciones" />
 
     <fragment
         android:id="@+id/favoritesFragment"
-        android:name="com.example.my_app_project.ui.fragment.favorites.FavoritesFragment"
+        android:name="com.example.my_app_project.ui.fragment.FavoritesFragment"
         android:label="Favoritos" />
 </navigation>
