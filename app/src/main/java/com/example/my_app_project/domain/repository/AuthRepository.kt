@@ -4,6 +4,6 @@ import com.google.firebase.auth.FirebaseUser
 
 
 interface AuthRepository {
-    suspend fun iniciarSesionConGoogle(idToken: String ): FirebaseUser?
+    suspend fun iniciarSesionConGoogle(idToken: String): FirebaseUser?
     fun obtenerUsuarioActual(): FirebaseUser?
 }
