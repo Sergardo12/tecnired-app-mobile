@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity() {
 
@@ -36,6 +39,25 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val drawer = findViewById<NavigationView>(R.id.navigation_view)
         val headerView = drawer.getHeaderView(0)
+        val nombreUsuario = headerView.findViewById<TextView>(R.id.txtNombreUsuario)
+
+        val db = FirebaseFirestore.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid
+
+        if (uid != null) {
+            db.collection("Usuario").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val nombre = document.getString("nombre") ?: ""
+                        val apellido = document.getString("apellido") ?: ""
+                        nombreUsuario.text = "$nombre $apellido"
+                    }
+                }
+                .addOnFailureListener { e ->
+                    nombreUsuario.text = "Usuario"
+                }
+        }
 
         val displayMetrics = Resources.getSystem().displayMetrics
         val screenWidth = displayMetrics.widthPixels
@@ -49,17 +71,6 @@ class HomeActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-//        val toggle = ActionBarDrawerToggle(
-//            this,
-//            drawerLayout,
-//            toolbar,
-//            R.string.navigation_drawer_open,
-//            R.string.navigation_drawer_close
-//        )
-//        drawerLayout.addDrawerListener(toggle)
-//        toggle.syncState()
-//        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.black)
 
         val customTitle = findViewById<TextView>(R.id.custom_title)
         val iconProfile = findViewById<ImageView>(R.id.icon_profile)
