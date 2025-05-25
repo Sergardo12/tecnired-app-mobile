@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.activity.Home
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.widget.Button
@@ -43,7 +44,7 @@ class HomeActivity : AppCompatActivity() {
         drawer.requestLayout()
 
         val btnDatosPersonales = headerView.findViewById<Button>(R.id.btn_datos_personales)
-        val btnDatosCuenta = headerView.findViewById<Button>(R.id.btn_datos_cuenta)
+        val btnDatosTrabajador = headerView.findViewById<Button>(R.id.btn_datos_trabajador)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -120,13 +121,13 @@ class HomeActivity : AppCompatActivity() {
             navController.safeNavigate(R.id.notificationsFragment)
         }
 
-        // Acciones para los botones del Drawer (puedes personalizar)
         btnDatosPersonales.setOnClickListener {
-            // Acción al pulsar "Datos personales"
+            val intent = Intent(this, DatosPersonales::class.java)
+            startActivity(intent)
         }
-
-        btnDatosCuenta.setOnClickListener {
-            // Acción al pulsar "Datos de la cuenta"
+        btnDatosTrabajador.setOnClickListener {
+            val intent = Intent(this, DatosTrabajador::class.java)
+            startActivity(intent)
         }
     }
 }

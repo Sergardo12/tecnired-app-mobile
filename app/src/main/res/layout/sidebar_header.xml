@@ -69,10 +69,19 @@
         android:layout_marginTop="8dp" />
 
     <Button
-        android:text="¿Necesitas ayuda?"
+        android:id="@+id/btn_datos_trabajador"
+        android:text="Convertirse en trabajador"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
+        android:backgroundTint="#555"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:text="¿Necesitas ayuda?"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:backgroundTint="#555"
         android:textColor="@android:color/white" />
 </LinearLayout>
