@@ -70,9 +70,8 @@
         android:layout_marginHorizontal="50dp"
         android:fontFamily="sans-serif"/>
 
-
     <Button
-        android:id="@+id/btnRegistrar"
+        android:id="@+id/btn_guardar"
         android:layout_width="300dp"
         android:layout_height="60dp"
         android:text="REGISTRAR"
