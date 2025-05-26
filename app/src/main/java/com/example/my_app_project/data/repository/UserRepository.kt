@@ -3,14 +3,16 @@ package com.example.my_app_project.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.my_app_project.domain.model.Usuario
+import com.example.my_app_project.domain.repository.UserRepository
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class UserRepository {
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+class UserRepositoryImpl @Inject constructor(
+    private val db: FirebaseFirestore,
+    private val auth: FirebaseAuth
+) : UserRepository {
 
-    suspend fun obtenerUsuario(): Usuario? {
-
+    override suspend fun obtenerUsuario(): Usuario? {
         val uid = auth.currentUser?.uid ?: return null
         return try {
             val snapshot = db.collection("Usuario").document(uid).get().await()
@@ -19,13 +21,14 @@ class UserRepository {
             null
         }
     }
-    suspend fun guardarUsuario(usuario: Usuario) {
-        val uid = auth.currentUser?.uid ?: return
-        try {
+
+    override suspend fun guardarUsuario(usuario: Usuario): Boolean {
+        val uid = auth.currentUser?.uid ?: return false
+        return try {
             db.collection("Usuario").document(uid).set(usuario).await()
+            true
         } catch (e: Exception) {
-            null
+            false
         }
     }
-
 }

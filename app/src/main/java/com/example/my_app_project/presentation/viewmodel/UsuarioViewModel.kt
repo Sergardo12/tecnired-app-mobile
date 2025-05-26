@@ -1,29 +1,31 @@
-package com.example.my_app_project.ui.viewmodel
+package com.example.my_app_project.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
-import com.example.my_app_project.data.repository.UserRepository
 import com.example.my_app_project.domain.model.Usuario
+import com.example.my_app_project.domain.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class UsuarioViewModel : ViewModel() {
-    private val repository = UserRepository()
-
+@HiltViewModel
+class UsuarioViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
 
     fun cargarUsuario() {
         viewModelScope.launch {
-            val user = repository.obtenerUsuario()
-            _usuario.value = user
+            _usuario.value = userRepository.obtenerUsuario()
         }
     }
     fun guardarUsuario(usuario: Usuario) {
         viewModelScope.launch {
-            repository.guardarUsuario(usuario)
+            val success = userRepository.guardarUsuario(usuario)
+            // Manejar el resultado
         }
     }
-
 }

@@ -11,12 +11,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.my_app_project.R
-import com.example.my_app_project.ui.viewmodel.UsuarioViewModel
+import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
 import com.example.my_app_project.domain.model.Usuario
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DatosPersonales : AppCompatActivity() {
-
-    private lateinit var viewModel: UsuarioViewModel
+    private val viewModel: UsuarioViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,13 @@ class DatosPersonales : AppCompatActivity() {
         val editApellido = findViewById<EditText>(R.id.apellido)
         val editTelefono = findViewById<EditText>(R.id.telefono)
 
-        viewModel = ViewModelProvider(this).get(UsuarioViewModel::class.java)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "No has iniciado sesión", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         viewModel.cargarUsuario()
         viewModel.usuario.observe(this) { usuario ->
             usuario?.let {
@@ -51,7 +59,6 @@ class DatosPersonales : AppCompatActivity() {
             viewModel.guardarUsuario(nuevoUsuario)
             Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show()
         }
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
