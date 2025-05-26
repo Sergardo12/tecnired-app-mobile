@@ -5,11 +5,6 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt)
 
-
-
-
-
-
 }
 
 android {
@@ -85,5 +80,5 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 }
