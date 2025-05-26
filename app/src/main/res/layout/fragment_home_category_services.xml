@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:fillViewport="true"
     android:scrollbars="none"
+    android:orientation="vertical"
     tools:context=".ui.fragment.CategoryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_categoria"
+        android:id="@+id/recyclerCategoria"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"

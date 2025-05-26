@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.my_app_project.ui.activity.Home.HomeActivity
 import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.example.my_app_project.ui.activity.Register.FormRegistro
+import com.example.my_app_project.ui.fragment.CategoryFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,6 +20,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        supportFragmentManager.beginTransaction()
+//            .replace(android.R.id.content, CategoryFragment())
+//            .commit()
 
 
         enableEdgeToEdge()

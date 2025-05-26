@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+
 @HiltViewModel
 class CategoriaViewModel @Inject constructor(
     private val categoriaRepository: CategoriaRepository
