@@ -1,5 +1,7 @@
 package com.example.my_app_project.di
 
+import com.example.my_app_project.data.repository.ServicioRepositoryImpl
+import com.example.my_app_project.domain.repository.ServicioRepository
 import com.example.my_app_project.data.repository.AuthRepositoryImpl
 import com.example.my_app_project.data.repository.CategoriaRepositoryImpl
 import com.example.my_app_project.data.repository.UserRepositoryImpl
@@ -35,6 +37,10 @@ abstract class RepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
+
+    @Provides
+    @Singleton
+    fun provideServicioRepository(): ServicioRepository = ServicioRepositoryImpl()
 
     @Provides
     @Singleton

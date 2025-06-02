@@ -62,6 +62,8 @@
                 android:layout_height="wrap_content"
                 android:text="Gasfitería en el hogar"
                 android:textSize="14sp"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:textColor="@android:color/holo_orange_dark" />
         </LinearLayout>
 
