@@ -29,19 +29,10 @@
             android:name=".ui.activity.Home.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.Register.FormRegisTrabajadorPart2"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.Register.FormRegisTrabajador"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity.Register.FormRegisCliente"
             android:exported="false" />
         <activity
             android:name=".ui.activity.Register.FormInicioSesion"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.Register.FormRegistro"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

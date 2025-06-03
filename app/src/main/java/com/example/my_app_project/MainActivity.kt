@@ -10,7 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.my_app_project.ui.activity.Home.HomeActivity
 import com.example.my_app_project.ui.activity.Register.FormInicioSesion
-import com.example.my_app_project.ui.activity.Register.FormRegistro
+import com.example.my_app_project.ui.activity.Register.FormRegisCliente
 import com.example.my_app_project.ui.fragment.CategoryFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         //Boton Registrar
         val btnRegistrar = findViewById<Button>(R.id.btnRegistrar)
         btnRegistrar.setOnClickListener{
-            val intento = Intent(this, FormRegistro::class.java)
+            val intento = Intent(this, FormRegisCliente::class.java)
             startActivity(intento)
         }
 

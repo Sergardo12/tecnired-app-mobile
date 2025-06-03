@@ -143,7 +143,7 @@
         app:layout_constraintTop_toBottomOf="@id/descripcion"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btngmail"
-        android:layout_marginTop="20dp"/>/>
+        android:layout_marginTop="20dp"/>
 
     <ImageView
         android:id="@+id/btngmail"
@@ -151,17 +151,7 @@
         android:layout_height="50dp"
         android:background="@drawable/gmail"
         app:layout_constraintStart_toEndOf="@id/btnfacebook"
-        app:layout_constraintTop_toTopOf="@id/btnfacebook"
-        app:layout_constraintEnd_toStartOf="@+id/btninstagram"
-        app:layout_constraintHorizontal_chainStyle="spread"/>
-
-    <ImageView
-        android:id="@+id/btninstagram"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/instagram"
-        app:layout_constraintStart_toEndOf="@id/btngmail"
-        app:layout_constraintTop_toTopOf="@id/btngmail"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnfacebook" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
