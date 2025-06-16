@@ -55,6 +55,17 @@
             app:layout_constraintTop_toBottomOf="@id/tvNombreColaborador"
             app:layout_constraintStart_toStartOf="@id/tvNombreColaborador"
             app:layout_constraintEnd_toEndOf="@id/tvNombreColaborador" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvPuntajeColaborador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="⭐ 4.5"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintTop_toBottomOf="@id/tvOficioColaborador"
+            app:layout_constraintStart_toStartOf="@id/tvOficioColaborador"
+            app:layout_constraintEnd_toEndOf="@id/tvOficioColaborador"
+            android:layout_marginTop="4dp"/>
 
         <!-- Botón de acción -->
         <com.google.android.material.button.MaterialButton

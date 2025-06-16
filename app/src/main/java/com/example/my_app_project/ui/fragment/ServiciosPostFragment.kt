@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.my_app_project.databinding.FragmentServiciosPostBinding
 import com.example.my_app_project.presentation.serviciosPost.ServicioPostViewModel
@@ -49,7 +50,7 @@ class ServiciosPostFragment : Fragment() {
     private fun inicializarRecyclerView() {
         adapter = ServicioPostAdapter()
         binding.recyclerServiciosPost.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = this@ServiciosPostFragment.adapter
         }
     }

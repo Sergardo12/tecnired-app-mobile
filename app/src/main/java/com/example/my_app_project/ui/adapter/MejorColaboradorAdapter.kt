@@ -35,6 +35,7 @@ class MejorColaboradorAdapter(
         private val imagen: ImageView = itemView.findViewById(R.id.imgColaborador)
         private val nombre: TextView = itemView.findViewById(R.id.tvNombreColaborador)
         private val categoria: TextView = itemView.findViewById(R.id.tvOficioColaborador)
+        private val puntaje: TextView = itemView.findViewById(R.id.tvPuntajeColaborador)
         private val botonContactar: Button = itemView.findViewById(R.id.btnContactar)
 
         fun bind(colaborador: MejorColaborador, onContactarClick: (MejorColaborador) -> Unit) {
@@ -45,7 +46,9 @@ class MejorColaboradorAdapter(
                 .into(imagen)
 
             nombre.text = colaborador.nombreUserperfil
-            categoria.text = colaborador.categoriaUserPerfil
+            categoria.text = colaborador.categoriaUserperfil
+            puntaje.text = "⭐ ${colaborador.puntajeUserperfil ?: "0.0"}"
+
 
             botonContactar.setOnClickListener {
                 onContactarClick(colaborador)
@@ -56,7 +59,7 @@ class MejorColaboradorAdapter(
     class DiffCallback : DiffUtil.ItemCallback<MejorColaborador>() {
         override fun areItemsTheSame(oldItem: MejorColaborador, newItem: MejorColaborador): Boolean {
             return oldItem.nombreUserperfil == newItem.nombreUserperfil &&
-                    oldItem.categoriaUserPerfil == newItem.categoriaUserPerfil
+                    oldItem.categoriaUserperfil == newItem.categoriaUserperfil
         }
 
         override fun areContentsTheSame(oldItem: MejorColaborador, newItem: MejorColaborador): Boolean {
