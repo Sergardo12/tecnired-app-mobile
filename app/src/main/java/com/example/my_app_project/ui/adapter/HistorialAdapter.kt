@@ -35,7 +35,7 @@ class HistorialAdapter : RecyclerView.Adapter<HistorialAdapter.ViewHolder>() {
             txtFecha.text = item.fechaFinalizadoHistorial
             txtEstado.text = item.estadoHistorial
             txtPrecio.text = "- S/ ${item.precioHistorial}"
-            Glide.with(imgPerfil.context).load(item.imagenHistorial).into(imgPerfil)
+            Glide.with(imgPerfil.context).load(item.imagenHistorial).circleCrop().into(imgPerfil)
         }
     }
 

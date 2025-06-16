@@ -75,6 +75,7 @@ class HomeActivity : AppCompatActivity() {
 
         val btnDatosPersonales = headerView.findViewById<Button>(R.id.btn_datos_personales)
         val btnDatosTrabajador = headerView.findViewById<Button>(R.id.btn_datos_trabajador)
+        val btnDatosCuenta = headerView.findViewById<Button>(R.id.btn_datos_cuenta)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -146,6 +147,10 @@ class HomeActivity : AppCompatActivity() {
         }
         btnDatosTrabajador.setOnClickListener {
             val intent = Intent(this, DatosTrabajador::class.java)
+            startActivity(intent)
+        }
+        btnDatosCuenta.setOnClickListener{
+            val intent = Intent(this,PerfilUsuario::class.java)
             startActivity(intent)
         }
     }
