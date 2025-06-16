@@ -55,5 +55,10 @@ class PerfilUsuario : AppCompatActivity() {
             }
             startActivity(intent)
         }
+        binding.btnMetodoPago.setOnClickListener{
+            val intent = Intent(this,MetodoPago::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }

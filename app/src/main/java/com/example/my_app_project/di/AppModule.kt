@@ -53,6 +53,7 @@ abstract class RepositoryModule {
         impl: MejorColaboradorRepositoryImpl
     ): MejorColaboradorRepository
 
+    @Binds
     abstract fun bindFavoritosRepository(
         impl: FavoritosRepositoryImpl
     ): FavoritosRepository

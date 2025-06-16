@@ -1,0 +1,46 @@
+package com.example.my_app_project.ui.activity.Home
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.my_app_project.R
+import com.example.my_app_project.databinding.ActivityMetodoPagoBinding
+import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class MetodoPago : AppCompatActivity() {
+    private lateinit var binding: ActivityMetodoPagoBinding
+    private val usuarioViewModel: UsuarioViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMetodoPagoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        usuarioViewModel.usuario.observe(this){usuario ->
+            usuario?.let{
+                binding.txtYape.text = "${it.nombre} ${it.apellido}"
+                binding.txtPlin.text = "${it.nombre} ${it.apellido}"
+                binding.txtNumero.text = it.telefono
+            }
+        }
+        usuarioViewModel.cargarUsuario()
+
+        binding.btnVolver.setOnClickListener {
+            val intent = Intent(this, PerfilUsuario::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+}
