@@ -43,6 +43,12 @@ class HomeFragment : Fragment() {
         childFragmentManager.beginTransaction()
             .replace(R.id.contenedor_categoria_fragment, CategoryFragment())
             .commit()
+
+        childFragmentManager.beginTransaction()
+            .replace(R.id.contenedor_mejores_colaboradores_fragment, MejorColaboradorFragment())
+            .commit()
+
+
     }
 
 

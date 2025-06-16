@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/md_theme_outlineVariant"
+    app:cardBackgroundColor="@color/md_theme_surface">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Imagen del colaborador con forma redondeada -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgColaborador"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="Imagen del colaborador"
+            android:src="@drawable/item_persona" />
+
+        <!-- Nombre del colaborador -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvNombreColaborador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nombre Apellido"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/imgColaborador"
+            app:layout_constraintStart_toEndOf="@id/imgColaborador"
+            app:layout_constraintEnd_toStartOf="@id/btnContactar"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Oficio del colaborador -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvOficioColaborador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Oficio"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintTop_toBottomOf="@id/tvNombreColaborador"
+            app:layout_constraintStart_toStartOf="@id/tvNombreColaborador"
+            app:layout_constraintEnd_toEndOf="@id/tvNombreColaborador" />
+
+        <!-- Botón de acción -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContactar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contactar"
+            android:textSize="14sp"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/item_phone"
+            app:iconPadding="8dp"
+            app:iconTint="@android:color/white"
+            android:textColor="@android:color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

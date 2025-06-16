@@ -14,7 +14,7 @@
         android:theme="@style/Theme.My_App_Project"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.Servicios.ServicioActivity"
+            android:name=".ui.activity.ServiciosPost.ServiciosPostActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.Home.DatosTrabajador"

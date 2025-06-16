@@ -2,9 +2,13 @@ package com.example.my_app_project.di
 
 import com.example.my_app_project.data.repository.AuthRepositoryImpl
 import com.example.my_app_project.data.repository.CategoriaRepositoryImpl
+import com.example.my_app_project.data.repository.MejorColaboradorRepositoryImpl
+import com.example.my_app_project.data.repository.ServicioPostRepositoryImpl
 import com.example.my_app_project.data.repository.UserRepositoryImpl
 import com.example.my_app_project.domain.repository.AuthRepository
 import com.example.my_app_project.domain.repository.CategoriaRepository
+import com.example.my_app_project.domain.repository.MejorColaboradorRepository
+import com.example.my_app_project.domain.repository.ServicioPostRepository
 import com.example.my_app_project.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,6 +33,16 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         impl: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    abstract fun bindServicioPostRepository(
+        impl: ServicioPostRepositoryImpl
+    ): ServicioPostRepository
+
+    @Binds
+    abstract fun bindMejorColaboradorRepository(
+        impl: MejorColaboradorRepositoryImpl
+    ): MejorColaboradorRepository
 }
 
 // Este módulo provee FirebaseFirestore como dependencia
