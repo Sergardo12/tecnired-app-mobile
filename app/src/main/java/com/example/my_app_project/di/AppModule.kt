@@ -6,11 +6,13 @@ import com.example.my_app_project.data.repository.AuthRepositoryImpl
 import com.example.my_app_project.data.repository.CategoriaRepositoryImpl
 import com.example.my_app_project.data.repository.FavoritosRepositoryImpl
 import com.example.my_app_project.data.repository.HistorialRepositoryImpl
+import com.example.my_app_project.data.repository.NotificacionesRepositoryImpl
 import com.example.my_app_project.data.repository.UserRepositoryImpl
 import com.example.my_app_project.domain.repository.AuthRepository
 import com.example.my_app_project.domain.repository.CategoriaRepository
 import com.example.my_app_project.domain.repository.FavoritosRepository
 import com.example.my_app_project.domain.repository.HistorialRepository
+import com.example.my_app_project.domain.repository.NotificacionesRepository
 import com.example.my_app_project.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,6 +47,11 @@ abstract class RepositoryModule {
     abstract fun bindHistorialRepository(
         impl: HistorialRepositoryImpl
     ): HistorialRepository
+
+    @Binds
+        abstract fun bindNotificacionesRepository(
+        impl: NotificacionesRepositoryImpl
+    ): NotificacionesRepository
 }
 
 // Este módulo provee FirebaseFirestore como dependencia
