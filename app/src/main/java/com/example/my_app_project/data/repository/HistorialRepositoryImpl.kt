@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.text.SimpleDateFormat
 import java.util.Locale
+import javax.inject.Inject
 
-class HistorialRepositoryImpl(
+class HistorialRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : HistorialRepository {
 

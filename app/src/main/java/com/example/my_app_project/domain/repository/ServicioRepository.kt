@@ -1,10 +1,10 @@
 package com.example.my_app_project.domain.repository
 
-import com.example.my_app_project.domain.model.ServicioPost
-import com.google.android.gms.tasks.Task
+import com.example.my_app_project.domain.model.ServicioUser
 
 interface ServicioRepository {
-    fun obtenerServiciosPorCategoria(categoria: String, callback: (List<ServicioPost>) -> Unit)
-    fun buscarServiciosPorTexto(texto: String, callback: (List<ServicioPost>) -> Unit)
-    fun obtenerTodosLosServicios(callback: (List<ServicioPost>) -> Unit)
+    fun obtenerServiciosPorCategoria(categoria: String, callback: (List<ServicioUser>) -> Unit)
+    fun buscarServiciosPorTexto(texto: String, callback: (List<ServicioUser>) -> Unit)
+    fun obtenerTodosLosServicios(callback: (List<ServicioUser>) -> Unit)
+    fun obtenerIdsFavoritosDelUsuario(callback: (Set<String>) -> Unit)
 }

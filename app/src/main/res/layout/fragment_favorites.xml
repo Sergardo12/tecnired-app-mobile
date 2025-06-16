@@ -22,6 +22,17 @@
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="todo"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="16dp"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/btnGasfitero"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,5 +87,15 @@
         android:paddingBottom="8dp"
         android:scrollbars="vertical"
         android:contentDescription="Lista de favoritos"/>
+
+    <TextView
+        android:id="@+id/textNoFavoritos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No tienes favoritos"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:textColor="@android:color/darker_gray"/>
+
 
 </LinearLayout>

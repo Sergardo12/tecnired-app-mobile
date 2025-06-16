@@ -14,6 +14,7 @@ import com.example.my_app_project.ui.activity.Home.HomeActivity
 import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.example.my_app_project.ui.activity.Register.FormRegisCliente
 import com.example.my_app_project.ui.fragment.CategoryFragment
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,7 +33,14 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        viewModel.crearHistorial()
+//        val currentUser = FirebaseAuth.getInstance().currentUser
+//        if (currentUser != null) {
+//            Log.d("MainActivity", "Usuario autenticado: ${currentUser.uid}")
+//            viewModel.crearHistorial()
+//        } else {
+//            Log.d("MainActivity", "No hay usuario autenticado aún")
+//        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

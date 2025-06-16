@@ -33,18 +33,24 @@
                 android:id="@+id/tituloNotificacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Nuevo gasfitero Disponible"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="@color/text_dark" />
+                android:textColor="@color/text_dark"
+                android:ellipsize="end"
+                android:layout_marginEnd="50dp"/>
 
             <TextView
                 android:id="@+id/descripcionNotificacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Hay un nuevo gasfitero cerca de ti!!"
                 android:textSize="14sp"
-                android:textColor="@color/text_light" />
+                android:textColor="@color/text_light"
+                android:ellipsize="end"
+                android:layout_marginEnd="50dp"/>
         </LinearLayout>
 
         <TextView
