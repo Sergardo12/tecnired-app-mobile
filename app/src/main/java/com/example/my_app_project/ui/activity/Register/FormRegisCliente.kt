@@ -37,21 +37,6 @@ class FormRegisCliente : AppCompatActivity() {
         }
 
         configurarGoogleSignIn()
-        val contraseña =findViewById<EditText>(R.id.contraseña)
-        val btnMostrarContraseña = findViewById<ImageButton>(R.id.btnMostrarContraseña)
-        var ContraseñaVisible = false
-
-        btnMostrarContraseña.setOnClickListener{
-            ContraseñaVisible = !ContraseñaVisible
-            if (ContraseñaVisible) {
-                contraseña.transformationMethod = null
-                btnMostrarContraseña.setBackgroundResource(R.drawable.ojoabierto)
-            }else{
-                contraseña.transformationMethod = PasswordTransformationMethod.getInstance()
-                btnMostrarContraseña.setBackgroundResource(R.drawable.ojocerrado)
-            }
-            contraseña.setSelection(contraseña.text.length)
-        }
 
         val btnGmail = findViewById<ImageView>(R.id.btngmail)
         btnGmail.setOnClickListener {
@@ -101,6 +86,4 @@ class FormRegisCliente : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, opciones)
     }
-
-
 }

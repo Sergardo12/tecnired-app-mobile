@@ -112,19 +112,6 @@
         app:layout_constraintTop_toBottomOf="@id/zonaTrabajo"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- ¿ES COLABORADOR? -->
-    <CheckBox
-        android:id="@+id/checkbox_colaborador"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="¿Eres colaborador?"
-        android:textSize="16sp"
-        android:fontFamily="sans-serif"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        app:layout_constraintTop_toBottomOf="@id/tarifa"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <!-- BOTÓN -->
     <Button
         android:id="@+id/btnRegistrar"
@@ -137,7 +124,7 @@
         android:textStyle="bold"
         android:textSize="20sp"
         android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/checkbox_colaborador"
+        app:layout_constraintTop_toBottomOf="@id/tarifa"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

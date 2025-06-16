@@ -21,14 +21,16 @@ class UserRepositoryImpl @Inject constructor(
             null
         }
     }
-
     override suspend fun guardarUsuario(usuario: Usuario): Boolean {
         val uid = auth.currentUser?.uid ?: return false
+        val correo = auth.currentUser?.email ?: return false
         return try {
-            db.collection("Usuario").document(uid).set(usuario).await()
+            val usuarioConCorreo = usuario.copy(correo = correo)
+            db.collection("Usuario").document(uid).set(usuarioConCorreo).await()
             true
         } catch (e: Exception) {
             false
         }
     }
+
 }

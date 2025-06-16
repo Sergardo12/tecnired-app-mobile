@@ -4,36 +4,90 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.my_app_project.databinding.FragmentFavoritesBinding
 import com.example.my_app_project.domain.model.Favorito
 import com.example.my_app_project.ui.adapter.FavoritosAdapter
-import com.example.my_app_project.R
+import com.example.my_app_project.presentation.favoritos.FavoritosViewModel
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 
+@AndroidEntryPoint
 class FavoritesFragment : Fragment() {
 
-    private lateinit var binding: FragmentFavoritesBinding
+    private var _binding: FragmentFavoritesBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: FavoritosViewModel by viewModels()
     private lateinit var favoritosAdapter: FavoritosAdapter
-    private lateinit var listaFavoritos: MutableList<Favorito>
+    private lateinit var uid: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
 
-        // Datos de ejemplo
-        listaFavoritos = mutableListOf(
-            Favorito("Luis R.", "Gasfitero", "Gasfitería en el hogar", 4.5f, R.drawable.ic_persona),
-            Favorito("Juan P.", "Electricista", "Instalaciones eléctricas", 4.2f, R.drawable.user_perfil),
-            Favorito("Pedro S.", "Carpintero", "Muebles a medida", 4.8f, R.drawable.ic_persona)
-        )
+        uid = FirebaseAuth.getInstance().currentUser?.uid ?: return binding.root
 
-        favoritosAdapter = FavoritosAdapter(listaFavoritos)
+        favoritosAdapter = FavoritosAdapter(emptyList(), viewModel, uid)
         binding.recyclerFavoritos.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerFavoritos.adapter = favoritosAdapter
 
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val favorito = favoritosAdapter.obtenerFavoritoEn(position)
+                favorito.let {
+                    viewModel.toggleFavorito(uid, Favorito(it.uid), esFavorito = true) {
+                        favoritosAdapter.eliminarFavoritoPorId(it.uid)
+                        Toast.makeText(requireContext(), "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerFavoritos)
+
+        viewModel.favoritos.observe(viewLifecycleOwner) { lista ->
+            if (lista.isEmpty()) {
+                binding.recyclerFavoritos.visibility = View.GONE
+                binding.textNoFavoritos.visibility = View.VISIBLE
+            } else {
+                binding.recyclerFavoritos.visibility = View.VISIBLE
+                binding.textNoFavoritos.visibility = View.GONE
+                favoritosAdapter.actualizarLista(lista)
+            }
+        }
+
+
+
+        binding.btnGasfitero.setOnClickListener { viewModel.filtrarPorCategoria("gasfiteria") }
+        binding.btnElectricista.setOnClickListener { viewModel.filtrarPorCategoria("electricidad") }
+        binding.btnCarpintero.setOnClickListener { viewModel.filtrarPorCategoria("carpinteria") }
+        binding.btnall.setOnClickListener { viewModel.mostrarTodos()}
+
+        viewModel.cargarFavoritos(uid)
+
         return binding.root
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
+
