@@ -125,7 +125,7 @@ class HomeActivity : AppCompatActivity() {
             if (destination.id == R.id.notificationsFragment) {
                 iconProfile.setImageResource(R.drawable.ic_arrow_back)
             } else {
-                iconProfile.setImageResource(R.drawable.ic_profile)
+                iconProfile.setImageResource(R.drawable.menu_3barras)
             }
         }
 
