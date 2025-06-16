@@ -16,6 +16,7 @@
     <color name="text_dark">#212121</color>
     <color name="text_light">#757575</color>
     <color name="amarillo">#fec740</color>
+    <color name="gray22">#808080</color>
 
     <color name="md_theme_outlineVariant">#DADADA</color>
     <color name="md_theme_surface">#FFFFFF</color>

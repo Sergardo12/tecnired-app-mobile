@@ -220,7 +220,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnEstadisticas"
+            android:id="@+id/btnMetodoPago"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mostrar formas de pago"
