@@ -79,7 +79,7 @@
             app:iconPadding="8dp"
             app:iconTint="@android:color/white"
             android:textColor="@android:color/white"
-            app:backgroundTint="?attr/colorPrimary"
+            app:backgroundTint="#333333"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
