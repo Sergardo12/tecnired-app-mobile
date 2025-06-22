@@ -6,6 +6,11 @@ plugins {
     alias(libs.plugins.hilt)
 
 }
+// ✅ Coloca este bloque justo aquí, antes de `android { ... }`
+val localProperties = rootProject.file("local.properties").readLines()
+val googleMapsKey = localProperties
+    .firstOrNull { it.startsWith("googleMapsKey=") }
+    ?.substringAfter("=") ?: ""
 
 android {
     namespace = "com.example.my_app_project"
@@ -19,6 +24,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // ✅ Usamos la variable cargada manualmente
+        manifestPlaceholders["googleMapsKey"] = googleMapsKey
+        buildConfigField("String", "GOOGLE_MAPS_KEY", "\"$googleMapsKey\"")
+
     }
 
     buildTypes {
@@ -40,6 +49,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 }

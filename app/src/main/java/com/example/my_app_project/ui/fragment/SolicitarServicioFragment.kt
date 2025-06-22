@@ -15,6 +15,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.my_app_project.BuildConfig
 import com.example.my_app_project.R
 import com.example.my_app_project.databinding.FragmentSolicitarServicioBinding
 import com.example.my_app_project.domain.model.ServicioSolicitud
@@ -55,9 +56,11 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
     // Inicialización del Fragmento
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+         //✅ Inicializar Places aquí
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), getString(R.string.google_maps_key), Locale.getDefault())
+            Places.initialize(requireContext(), BuildConfig.GOOGLE_MAPS_KEY, Locale.getDefault())
         }
+
     }
 
     override fun onCreateView(
@@ -71,6 +74,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
     // Cuando la vista ya está creada
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         // Mapa
         mapaFragmento = SupportMapFragment.newInstance()
