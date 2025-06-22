@@ -23,8 +23,12 @@ class CategoriaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _nombresCategorias = MutableStateFlow<List<Categoria>>(emptyList())
+    val nombresCategorias: StateFlow<List<Categoria>> = _nombresCategorias
+
     init {
         obtenerCategorias()
+        obtenerNombreCategorias()
     }
 
     private fun obtenerCategorias(){
@@ -35,6 +39,18 @@ class CategoriaViewModel @Inject constructor(
             }
             .catch { throwable ->
                 _error.value = throwable.message?: "Error desconocido"
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun obtenerNombreCategorias() {
+        categoriaRepository.obtenerNombreCategoria()
+            .onEach { lista ->
+                _nombresCategorias.value = lista
+                _error.value = null
+            }
+            .catch { throwable ->
+                _error.value = throwable.message ?: "Error desconocido"
             }
             .launchIn(viewModelScope)
     }

@@ -28,4 +28,25 @@ class CategoriaRepositoryImpl @Inject constructor(
         }
         awaitClose{listener.remove()}
     }
+
+    override fun obtenerNombreCategoria(): Flow<List<Categoria>> = callbackFlow {
+        val listener = firestore.collection("categorias")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val lista = snapshot?.documents?.mapNotNull { doc ->
+                    val id = doc.id
+                    val nombre = doc.getString("nombreCategoria") // Ajusta si tu campo tiene otro nombre
+                    if (nombre != null) Categoria(id = id, nombreCategoria = nombre) else null
+                } ?: emptyList()
+
+                trySend(lista)
+            }
+
+        awaitClose { listener.remove() }
+    }
+
 }

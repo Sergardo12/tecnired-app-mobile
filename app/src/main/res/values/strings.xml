@@ -9,4 +9,7 @@
     <string name="navigation_drawer_open">Abrir menú</string>
     <string name="navigation_drawer_close">Cerrar menú</string>
 
+    <string name="google_maps_key">AIzaSyD8naGBNUOetVvFp5Y8lPcwb4w5KKvnWNg</string>
+
+
 </resources>

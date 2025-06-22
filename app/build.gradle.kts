@@ -86,4 +86,10 @@ dependencies {
     //Material Design
     implementation("com.google.android.material:material:1.13.0-alpha13")
 
+    //Google maps
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.android.libraries.places:places:3.4.0")
+    implementation ("com.google.android.libraries.places:places:3.4.0")
+
+
 }

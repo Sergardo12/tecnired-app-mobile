@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface CategoriaRepository {
       fun obtenerCategorias(): Flow<List<Categoria>>
+      fun obtenerNombreCategoria(): Flow<List<Categoria>>
 }

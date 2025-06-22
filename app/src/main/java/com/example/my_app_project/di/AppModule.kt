@@ -14,9 +14,11 @@ import com.example.my_app_project.domain.repository.ServicioPostRepository
 import com.example.my_app_project.data.repository.FavoritosRepositoryImpl
 import com.example.my_app_project.data.repository.HistorialRepositoryImpl
 import com.example.my_app_project.data.repository.NotificacionesRepositoryImpl
+import com.example.my_app_project.data.repository.ServicioSolicitudRepositoryImpl
 import com.example.my_app_project.domain.repository.FavoritosRepository
 import com.example.my_app_project.domain.repository.HistorialRepository
 import com.example.my_app_project.domain.repository.NotificacionesRepository
+import com.example.my_app_project.domain.repository.ServicioSolicitudRepository
 import com.example.my_app_project.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -66,6 +68,11 @@ abstract class RepositoryModule {
         abstract fun bindNotificacionesRepository(
         impl: NotificacionesRepositoryImpl
     ): NotificacionesRepository
+
+    @Binds
+    abstract fun bindServicioSolicitudRepository(
+        impl: ServicioSolicitudRepositoryImpl
+    ): ServicioSolicitudRepository
 
 }
 

@@ -18,6 +18,10 @@
         android:id="@+id/historyFragment"
         android:name="com.example.my_app_project.ui.fragment.HistoryFragment"
         android:label="Historial" />
+    <fragment
+        android:id="@+id/solicitarServicioFragment"
+        android:name="com.example.my_app_project.ui.fragment.SolicitarServicioFragment"
+        android:label="Solictar Servicio"/>
 
     <fragment
         android:id="@+id/notificationsFragment"

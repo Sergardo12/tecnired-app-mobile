@@ -100,6 +100,10 @@ class HomeActivity : AppCompatActivity() {
                     navController.safeNavigate(R.id.searchFragment)
                     true
                 }
+                R.id.solicitarServicioFragment -> {
+                    navController.safeNavigate(R.id.solicitarServicioFragment)
+                    true
+                }
                 R.id.historyFragment -> {
                     navController.safeNavigate(R.id.historyFragment)
                     true
@@ -116,6 +120,7 @@ class HomeActivity : AppCompatActivity() {
             customTitle.text = when (destination.id) {
                 R.id.historyFragment -> "Historial"
                 R.id.searchFragment -> "Buscar"
+                R.id.solicitarServicioFragment -> "Solicitar Servicio"
                 R.id.homeFragment -> "Inicio"
                 R.id.notificationsFragment -> "Notificaciones"
                 R.id.favoritesFragment -> "Favoritos"
