@@ -23,13 +23,19 @@ class MejorColaboradorRepositoryImpl @Inject constructor(
                 return@addSnapshotListener
             }
             val lista = snapshot.documents.mapNotNull { doc ->
-                doc.toObject(MejorColaborador::class.java)
+                MejorColaborador(
+                    uidUserperfil = doc.id,
+                    nombreUserperfil = doc.getString("nombreUserperfil") ?: "",
+                    categoriaUserperfil = doc.getString("categoriaUserperfil") ?: "",
+                    imagenUserperfil = doc.getString("imagenUserperfil") ?: "",
+                    puntajeUserperfil = doc.getDouble("puntajeUserperfil") ?: 0.0,
+                    numeroUserperfil = doc.getString("numeroUserperfil") ?: "",
+                    correoUserperfil = doc.getString("correoUserperfil") ?: ""
+                )
             }
             trySend(lista)
     }
         awaitClose{listener.remove()}
 
     }
-
-
 }

@@ -95,6 +95,28 @@ class ServicioRepositoryImpl : ServicioRepository {
                 callback(emptySet())
             }
     }
+    override fun obtenerUsuarioPorUid(uid: String, callback: (ServicioUser?) -> Unit) {
+        db.collection("userperfil")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (doc != null && doc.exists()) {
+                    val usuario = ServicioUser(
+                        uidUserperfil = doc.id,
+                        nombreUserperfil = doc.getString("nombreUserperfil") ?: "",
+                        categoriaUserperfil = doc.getString("categoriaUserperfil") ?: "",
+                        especialidadUserperfil = doc.getString("especialidadUserperfil") ?: "",
+                        imagenUserperfil = doc.getString("imagenUserperfil") ?: "",
+                        numeroUserperfil = doc.getString("numeroUserperfil")?:"",
+                        correoUserperfil = doc.getString("correoUserperfil")?:"",
+                        calificacionUser = doc.getDouble("puntajeUserperfil")?.toString() ?: "0.0",
+                        puntajeUserperfil = doc.getDouble("puntajeUserperfil") ?: 0.0
+                    )
+                    callback(usuario)
+                } else callback(null)
+            }
+            .addOnFailureListener { callback(null) }
+    }
 
 }
 
