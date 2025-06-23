@@ -8,15 +8,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.example.my_app_project.R
 import com.example.my_app_project.databinding.ActivityPerfilUsuarioBinding
+import com.example.my_app_project.presentation.perfilUser.PerfilUserViewModel
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PerfilUsuario : AppCompatActivity() {
     private lateinit var binding: ActivityPerfilUsuarioBinding
-    private val usuarioViewModel: UsuarioViewModel by viewModels()
+    private val PerfilUserViewModel: PerfilUserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,20 +31,19 @@ class PerfilUsuario : AppCompatActivity() {
             insets
         }
 
-        usuarioViewModel.usuario.observe(this) { usuario ->
+        val uid = intent.getStringExtra("uid") ?: return
+        PerfilUserViewModel.cargarPerfil(uid)
+        PerfilUserViewModel.perfilUser.observe(this) { usuario ->
             usuario?.let {
-                binding.txtNombre.text = "${it.nombre} ${it.apellido}"
-                binding.txtCorreo.text = it.correo
-                binding.txtTelefono.text = it.telefono
-                binding.txtProfesion.text = it.profesion ?: ""
-                binding.txtEspecialidad.text = it.especialidad ?: ""
-                binding.txtDescripcion.text = it.descripcion ?: ""
-                binding.txtHorario.text = it.horario ?: ""
-                binding.txtTarifa.text = "S/ ${it.tarifa ?: "0.00"}"
+                binding.txtNombre.text = it.nombreUserperfil
+                binding.txtCategoria.text = it.categoriaUserperfil
+                binding.txtEspecialidad.text = it.especialidadUserperfil
+                binding.txtTarifa.text = "⭐ ${it.puntajeUserperfil}"
+                binding.txtTelefono.text = it.numeroUserperfil
+                binding.txtCorreo.text = it.correoUserperfil
+                Glide.with(this).load(it.imagenUserperfil).circleCrop().into(binding.ivFotoPerfil)
             }
         }
-        usuarioViewModel.cargarUsuario()
-
         binding.btnVolver.setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
@@ -56,9 +57,36 @@ class PerfilUsuario : AppCompatActivity() {
             startActivity(intent)
         }
         binding.btnMetodoPago.setOnClickListener{
-            val intent = Intent(this,MetodoPago::class.java)
+            val uid = intent.getStringExtra("uid") ?: return@setOnClickListener
+            val intent = Intent(this, MetodoPago::class.java)
+            intent.putExtra("uid", uid)
             startActivity(intent)
-            finish()
         }
+        binding.btnCompartir.setOnClickListener {
+            mostrarDialogoCompartir()
+        }
+    }
+    private fun mostrarDialogoCompartir() {
+        val nombre = binding.txtNombre.text.toString()
+        val categoria = binding.txtCategoria.text.toString()
+        val especialidad = binding.txtEspecialidad.text.toString()
+        val telefono = binding.txtTelefono.text.toString()
+        val correo = binding.txtCorreo.text.toString()
+
+        val mensaje = """
+        ¡Hola! Te comparto el perfil de un profesional:
+        
+        👤 Nombre: $nombre
+        🛠 Categoría: $categoria
+        🔧 Especialidad: $especialidad
+        📞 Teléfono: $telefono
+        ✉️ Correo: $correo
+        
+    """.trimIndent()
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, mensaje)
+        }
+        startActivity(Intent.createChooser(intent, "Compartir perfil vía"))
     }
 }

@@ -7,4 +7,5 @@ interface ServicioRepository {
     fun buscarServiciosPorTexto(texto: String, callback: (List<ServicioUser>) -> Unit)
     fun obtenerTodosLosServicios(callback: (List<ServicioUser>) -> Unit)
     fun obtenerIdsFavoritosDelUsuario(callback: (Set<String>) -> Unit)
+    fun obtenerUsuarioPorUid(uid: String, callback: (ServicioUser?) -> Unit)
 }

@@ -156,10 +156,10 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this, DatosTrabajador::class.java)
             startActivity(intent)
         }
-        btnDatosCuenta.setOnClickListener{
-            val intent = Intent(this,PerfilUsuario::class.java)
-            startActivity(intent)
-        }
+//        btnDatosCuenta.setOnClickListener{
+//            val intent = Intent(this,PerfilUsuario::class.java)
+//            startActivity(intent)
+//        }
         btnCerrarSesion.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, FormInicioSesion::class.java))

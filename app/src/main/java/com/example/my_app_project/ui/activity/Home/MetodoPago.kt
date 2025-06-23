@@ -7,15 +7,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.example.my_app_project.R
 import com.example.my_app_project.databinding.ActivityMetodoPagoBinding
+import com.example.my_app_project.presentation.perfilUser.PerfilUserViewModel
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MetodoPago : AppCompatActivity() {
     private lateinit var binding: ActivityMetodoPagoBinding
-    private val usuarioViewModel: UsuarioViewModel by viewModels()
+    private val PerfilUserViewModel: PerfilUserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,19 +30,20 @@ class MetodoPago : AppCompatActivity() {
             insets
         }
 
-        usuarioViewModel.usuario.observe(this){usuario ->
-            usuario?.let{
-                binding.txtYape.text = "${it.nombre} ${it.apellido}"
-                binding.txtPlin.text = "${it.nombre} ${it.apellido}"
-                binding.txtNumero.text = it.telefono
+        val uid = intent.getStringExtra("uid") ?: return
+        PerfilUserViewModel.cargarPerfil(uid)
+        PerfilUserViewModel.perfilUser.observe(this) { usuario ->
+            usuario?.let {
+                binding.txtYape.text = it.nombreUserperfil
+                binding.txtPlin.text = it.nombreUserperfil
+                binding.txtNumero.text = it.numeroUserperfil
             }
         }
-        usuarioViewModel.cargarUsuario()
-
         binding.btnVolver.setOnClickListener {
+            val uid = intent.getStringExtra("uid") ?: return@setOnClickListener
             val intent = Intent(this, PerfilUsuario::class.java)
+            intent.putExtra("uid", uid)
             startActivity(intent)
-            finish()
         }
     }
 }
