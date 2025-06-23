@@ -22,6 +22,7 @@
             android:textColor="@color/black"
             android:layout_marginBottom="16dp" />
 
+
         <!-- Selector de categoría -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -40,6 +41,18 @@
                 android:textColor="@color/black"
                 />
         </com.google.android.material.textfield.TextInputLayout>
+        <!-- Aquí va el TextView dinámico del precio -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textTarifaEstimado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:drawablePadding="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            android:text="Aquí va el estimado de tarifa" />
 
         <!-- Rango de referencia -->
         <TextView

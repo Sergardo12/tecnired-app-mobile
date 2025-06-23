@@ -54,4 +54,8 @@ class CategoriaViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+
+    suspend fun obtenerTarifasDeCategorias(nombre: String): Categoria? {
+        return categoriaRepository.obtenerTarifasDeCategorias(nombre)
+    }
 }

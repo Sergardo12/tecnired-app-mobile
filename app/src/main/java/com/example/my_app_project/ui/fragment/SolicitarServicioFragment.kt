@@ -32,6 +32,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.util.*
 
 @AndroidEntryPoint
@@ -56,7 +57,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
     // Inicialización del Fragmento
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         //✅ Inicializar Places aquí
+         //Inicializar Places
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), BuildConfig.GOOGLE_MAPS_KEY, Locale.getDefault())
         }
@@ -191,8 +192,24 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
 
             inputCategoria.setOnItemClickListener { parent, _, position, _ ->
                 val nombre = parent.getItemAtPosition(position).toString()
-                val categoria = categorias.find { it.nombreCategoria == nombre }
-                categoriaIdSeleccionada = categoria?.id
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val categoria = categoriaViewModel.obtenerTarifasDeCategorias(nombre)
+
+                    println("DEBUG -> Categoría seleccionada: $nombre")
+                    println("DEBUG -> ID: ${categoria?.id}, Min: ${categoria?.tarifaMinCategoria}, Max: ${categoria?.tarifaMaxCategoria}")
+
+                    categoriaIdSeleccionada = categoria?.id
+
+                    if (categoria != null && categoria.tarifaMinCategoria > 0.00 && categoria.tarifaMaxCategoria > 0.00) {
+                        val mensaje = "💬 Precio estimado: S/ ${categoria.tarifaMinCategoria} - S/ ${categoria.tarifaMaxCategoria}"
+                        binding.textTarifaEstimado.text = mensaje
+                        binding.textTarifaEstimado.visibility = View.VISIBLE
+                    } else {
+                        binding.textTarifaEstimado.text = "No hay tarifa definida"
+                        binding.textTarifaEstimado.visibility = View.VISIBLE
+                    }
+                }
+
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }

@@ -22,7 +22,8 @@ class CategoriaRepositoryImpl @Inject constructor(
                 return@addSnapshotListener
             }
             val listaCategorias = snapshot?.documents?.mapNotNull { doc ->
-                doc.toObject(Categoria::class.java)
+                val categoria = doc.toObject(Categoria::class.java)
+                categoria?.copy(id = doc.id)
             } ?: emptyList()
             trySend(listaCategorias)
         }
@@ -47,6 +48,16 @@ class CategoriaRepositoryImpl @Inject constructor(
             }
 
         awaitClose { listener.remove() }
+    }
+
+    override suspend fun obtenerTarifasDeCategorias(nombre: String): Categoria? {
+        val snapshot = firestore.collection("categorias")
+            .whereEqualTo("nombreCategoria", nombre)
+            .get()
+            .await()
+
+        val doc = snapshot.documents.firstOrNull()
+        return doc?.toObject(Categoria::class.java)?.copy(id = doc.id)
     }
 
 }
