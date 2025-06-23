@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import com.example.my_app_project.presentation.historial.HistorialViewModel
+import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,6 +77,7 @@ class HomeActivity : AppCompatActivity() {
         val btnDatosPersonales = headerView.findViewById<Button>(R.id.btn_datos_personales)
         val btnDatosTrabajador = headerView.findViewById<Button>(R.id.btn_datos_trabajador)
         val btnDatosCuenta = headerView.findViewById<Button>(R.id.btn_datos_cuenta)
+        val btnCerrarSesion = headerView.findViewById<Button>(R.id.btn_cerrar_sesion)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -158,5 +160,11 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this,PerfilUsuario::class.java)
             startActivity(intent)
         }
+        btnCerrarSesion.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(this, FormInicioSesion::class.java))
+            finish()
+        }
+
     }
 }
