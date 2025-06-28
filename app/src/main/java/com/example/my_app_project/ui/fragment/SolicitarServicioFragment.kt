@@ -21,6 +21,7 @@ import com.example.my_app_project.databinding.FragmentSolicitarServicioBinding
 import com.example.my_app_project.domain.model.ServicioSolicitud
 import com.example.my_app_project.presentation.autenticacion.AuthViewModel
 import com.example.my_app_project.presentation.categorias.CategoriaViewModel
+import com.example.my_app_project.presentation.notificaciones.NotificacionesViewModel
 import com.example.my_app_project.presentation.servicioSolicitud.ServicioSolicitudViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
@@ -46,6 +47,8 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
     private val solicitudViewModel: ServicioSolicitudViewModel by viewModels()
     private val categoriaViewModel: CategoriaViewModel by viewModels()
     private val authViewModel: AuthViewModel by viewModels()
+    private val viewModel: NotificacionesViewModel by viewModels()
+
 
     // Mapa
     private lateinit var mapa: GoogleMap
@@ -53,6 +56,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
 
     // Estado interno
     private var categoriaIdSeleccionada: String? = null
+
 
     // Inicialización del Fragmento
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -221,6 +225,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
         val categoriaId = categoriaIdSeleccionada
         val usuario = authViewModel.usuarioActual.value
 
+
         val latLng = try {
             mapa.cameraPosition.target
         } catch (e: Exception) {
@@ -248,6 +253,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
         solicitudViewModel.estadoSolicitud.onEach { resultado ->
             resultado?.onSuccess {
                 Toast.makeText(requireContext(), "Solicitud enviada con éxito", Toast.LENGTH_SHORT).show()
+                viewModel.crearNotificacionesDesdeServiciosPendientes()
                 solicitudViewModel.limpiarEstado()
                 limpiarCampos()
             }?.onFailure {

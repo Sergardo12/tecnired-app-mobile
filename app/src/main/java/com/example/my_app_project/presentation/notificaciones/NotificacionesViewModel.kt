@@ -3,6 +3,7 @@ package com.example.my_app_project.presentation.notificaciones
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.my_app_project.data.repository.NotificacionesRepositoryImpl
 import com.example.my_app_project.domain.model.Notificacion
 import com.example.my_app_project.domain.repository.NotificacionesRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -47,6 +48,19 @@ class NotificacionesViewModel @Inject constructor(
         repo.enviarNotificacion(uid, noti)
     }
 
+    fun enviarNotificacionGlobalPorCategoria(categoriaId: String, titulo: String, mensaje: String, iconoUrl: String = "") {
+        if (repo is com.example.my_app_project.data.repository.NotificacionesRepositoryImpl) {
+            repo.enviarNotificacionPorCategoria(categoriaId, titulo, mensaje, iconoUrl)
+        }
+    }
+
+    fun migrarServiciosANotificaciones() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        if (repo is NotificacionesRepositoryImpl) {
+            repo.crearNotificacionesDesdeServicios(uid)
+        }
+    }
+
     fun filtrarTodos() {
         _notificaciones.postValue(listaOriginal)
     }
@@ -75,4 +89,13 @@ class NotificacionesViewModel @Inject constructor(
         }
         _notificaciones.postValue(filtradas)
     }
+
+    fun crearNotificacionesDesdeServiciosPendientes() {
+        if (repo is NotificacionesRepositoryImpl) {
+            repo.crearNotificacionesDesdeServiciosPendientes()
+        }
+    }
+
+
+
 }

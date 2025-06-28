@@ -32,4 +32,10 @@
         android:id="@+id/favoritesFragment"
         android:name="com.example.my_app_project.ui.fragment.FavoritesFragment"
         android:label="Favoritos" />
+
+    <fragment
+        android:id="@+id/solicitudesColaboradorFragment"
+        android:name="com.example.my_app_project.ui.fragment.SolicitudesColaboradorFragment"
+        android:label="Solicitudes" />
+
 </navigation>

@@ -35,16 +35,7 @@ class NotificationsFragment : Fragment() {
     ): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
 
-        adapter = NotiAdapter(emptyList()) { noti ->
-            if (!noti.leido) {
-                uid?.let { userId ->
-                    viewModel.marcarLeida(userId, noti.id) {
-                        Toast.makeText(requireContext(), "Notificación marcada como leída", Toast.LENGTH_SHORT).show()
-                        viewModel.cargar(userId)
-                    }
-                }
-            }
-        }
+        adapter = NotiAdapter(emptyList(), ::onNotificacionClick)
 
         binding.recyclerNotificaciones.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerNotificaciones.adapter = adapter
@@ -54,7 +45,10 @@ class NotificationsFragment : Fragment() {
             binding.textNoNotificaciones.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        uid?.let { viewModel.cargar(it) }
+        uid?.let {
+            viewModel.cargar(it)
+        }
+
 
         binding.btnTodos.setOnClickListener {
             viewModel.filtrarTodos()
@@ -83,5 +77,17 @@ class NotificationsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun onNotificacionClick(noti: Notificacion) {
+        if (!noti.leido) {
+            uid?.let { userId ->
+                viewModel.marcarLeida(userId, noti.id) {
+                    Toast.makeText(requireContext(), "Notificación marcada como leída", Toast.LENGTH_SHORT).show()
+                    viewModel.cargar(userId)
+                }
+            }
+        }
+    }
+
 }
 

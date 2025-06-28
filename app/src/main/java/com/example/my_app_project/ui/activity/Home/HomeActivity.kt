@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import com.example.my_app_project.presentation.historial.HistorialViewModel
+import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
 import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,12 +32,14 @@ import kotlin.getValue
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     val viewModel: HistorialViewModel by viewModels()
+    val userviewModel: UsuarioViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
         viewModel.crearHistorial()
+        userviewModel.cargarUsuario()
 
         val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
@@ -44,6 +47,39 @@ class HomeActivity : AppCompatActivity() {
             view.updatePadding(top = statusBarHeight)
             insets
         }
+
+        val esFlujoInicial = intent.getBooleanExtra("esFlujoInicial", false)
+
+        val uidser = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        userviewModel.verificarPerfilUsuario(uidser)
+
+        userviewModel.tienePerfil.observe(this) { tienePerfil ->
+            if (!tienePerfil) {
+                val intent = Intent(this, DatosPersonales::class.java)
+                intent.putExtra("esFlujoInicial", true)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+
+            }
+        }
+
+        userviewModel.usuario.observe(this) { usuario ->
+            usuario?.let {
+                val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+                when (usuario.rol) {
+                    "colaborador" -> {
+                        bottomNav.menu.clear()
+                        bottomNav.inflateMenu(R.menu.bottom_nav_colaborador)
+                    }
+                    else -> {
+                        bottomNav.menu.clear()
+                        bottomNav.inflateMenu(R.menu.bottom_nav_cliente)
+                    }
+                }
+            }
+        }
+
+
 
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val drawer = findViewById<NavigationView>(R.id.navigation_view)
@@ -78,6 +114,7 @@ class HomeActivity : AppCompatActivity() {
         val btnDatosTrabajador = headerView.findViewById<Button>(R.id.btn_datos_trabajador)
         val btnDatosCuenta = headerView.findViewById<Button>(R.id.btn_datos_cuenta)
         val btnCerrarSesion = headerView.findViewById<Button>(R.id.btn_cerrar_sesion)
+        val btnFavoritos = headerView.findViewById<Button>(R.id.btn_favoritos)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -126,6 +163,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.homeFragment -> "Inicio"
                 R.id.notificationsFragment -> "Notificaciones"
                 R.id.favoritesFragment -> "Favoritos"
+                R.id.solicitudesColaboradorFragment -> "Solicitudes"
                 else -> ""
             }
 
@@ -150,20 +188,26 @@ class HomeActivity : AppCompatActivity() {
 
         btnDatosPersonales.setOnClickListener {
             val intent = Intent(this, DatosPersonales::class.java)
+            intent.putExtra("esFlujoInicial", false)
             startActivity(intent)
         }
         btnDatosTrabajador.setOnClickListener {
             val intent = Intent(this, DatosTrabajador::class.java)
             startActivity(intent)
         }
-//        btnDatosCuenta.setOnClickListener{
-//            val intent = Intent(this,PerfilUsuario::class.java)
-//            startActivity(intent)
-//        }
+        btnDatosCuenta.setOnClickListener{
+            val intent = Intent(this,PerfilUsuario::class.java)
+            startActivity(intent)
+        }
         btnCerrarSesion.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, FormInicioSesion::class.java))
             finish()
+        }
+
+        btnFavoritos.setOnClickListener {
+            navController.safeNavigate(R.id.favoritesFragment)
+            drawerLayout.closeDrawer(drawer)
         }
 
     }

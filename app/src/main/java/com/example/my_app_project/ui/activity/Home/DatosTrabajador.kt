@@ -1,60 +1,93 @@
 package com.example.my_app_project.ui.activity.Home
 
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.activity.viewModels
 import com.example.my_app_project.R
+import com.example.my_app_project.databinding.ActivityDatosTrabajadorBinding
+import com.example.my_app_project.domain.model.UsuarioPerfil
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DatosTrabajador : AppCompatActivity() {
+
+    private lateinit var binding: ActivityDatosTrabajadorBinding
     private val viewModel: UsuarioViewModel by viewModels()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_datos_trabajador)
+        binding = ActivityDatosTrabajadorBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val profesion = findViewById<EditText>(R.id.profesion)
-        val especialidad = findViewById<EditText>(R.id.especialidad)
-        val descripcion = findViewById<EditText>(R.id.descripcion)
-        val horario = findViewById<EditText>(R.id.horario)
-        val tarifa = findViewById<EditText>(R.id.tarifa)
-        val btnRegistrar = findViewById<Button>(R.id.btnRegistrar)
+        val editespecialidad = binding.especialidad
+        val editdescripcion = binding.descripcion
+        val edithorario = binding.horario
 
         viewModel.cargarUsuario()
+        viewModel.cargarCategorias()
 
-        btnRegistrar.setOnClickListener {
-            viewModel.usuario.value?.let { usuarioActual ->
-                val usuarioActualizado = usuarioActual.copy(
-                    profesion = profesion.text.toString().ifBlank { null },
-                    especialidad = especialidad.text.toString().ifBlank { null },
-                    descripcion = descripcion.text.toString().ifBlank { null },
-                    horario = horario.text.toString().ifBlank { null },
-                    tarifa = tarifa.text.toString().ifBlank { null },
-                    esColaborador = true
-                )
+        viewModel.categorias.observe(this) { categorias ->
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categorias)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerCategoria.adapter = adapter
 
-                viewModel.guardarUsuario(usuarioActualizado)
+            viewModel.cargarPerfilColaborador()
+            viewModel.perfilColaborador.observe(this) { usuario ->
+                usuario?.let {
+                    editespecialidad.setText(it.especialidadUserperfil)
+                    editdescripcion.setText(it.descripcionUserperfil)
+                    edithorario.setText(it.horarioUserperfil)
 
-                Toast.makeText(this, "¡Ahora eres trabajador!", Toast.LENGTH_SHORT).show()
-                finish()
-            } ?: run {
-                Toast.makeText(this, "Usuario no cargado aún", Toast.LENGTH_SHORT).show()
+                    val index = categorias.indexOf(it.categoriaUserperfil)
+                    if (index >= 0) {
+                        binding.spinnerCategoria.setSelection(index)
+                    }
+                }
             }
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        binding.btnRegistrar.setOnClickListener {
+            val categoria = binding.spinnerCategoria.selectedItem?.toString()?.trim() ?: ""
+            val especialidad = editespecialidad.text.toString().trim()
+            val descripcion = editdescripcion.text.toString().trim()
+            val horario = edithorario.text.toString().trim()
+
+            val usuario = viewModel.usuario.value
+            val uid = auth.currentUser?.uid ?: ""
+
+            if (categoria.isNotEmpty() && especialidad.isNotEmpty() && usuario != null && uid.isNotEmpty()) {
+                val perfil = UsuarioPerfil(
+                    categoriaUserperfil = categoria,
+                    correoUserperfil = auth.currentUser?.email ?: "",
+                    especialidadUserperfil = especialidad,
+                    imagenUserperfil = "",
+                    descripcionUserperfil = descripcion,
+                    horarioUserperfil = horario,
+                    nombreUserperfil = usuario.nombre,
+                    numeroUserperfil = usuario.telefono,
+                    puntajeUserperfil = 0.0,
+                    uid = uid
+                )
+
+                viewModel.guardarPerfilColaborador(uid, perfil)
+                viewModel.registroExitoso.observe(this) { exitoso ->
+                    if (exitoso) {
+                        Toast.makeText(this, "Perfil registrado con éxito", Toast.LENGTH_SHORT).show()
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Error al guardar el perfil", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Completa todos los campos obligatorios", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+
 }
