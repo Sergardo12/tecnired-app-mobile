@@ -151,6 +151,10 @@ class HomeActivity : AppCompatActivity() {
                     navController.safeNavigate(R.id.favoritesFragment)
                     true
                 }
+                R.id.solicitudesColaboradorFragment -> {
+                    navController.safeNavigate(R.id.solicitudesColaboradorFragment)
+                    true
+                }
                 else -> false
             }
         }
@@ -194,6 +198,7 @@ class HomeActivity : AppCompatActivity() {
         btnDatosTrabajador.setOnClickListener {
             val intent = Intent(this, DatosTrabajador::class.java)
             startActivity(intent)
+            finish()
         }
         btnDatosCuenta.setOnClickListener{
             val intent = Intent(this,PerfilUsuario::class.java)
@@ -209,6 +214,7 @@ class HomeActivity : AppCompatActivity() {
             navController.safeNavigate(R.id.favoritesFragment)
             drawerLayout.closeDrawer(drawer)
         }
+
 
     }
 }

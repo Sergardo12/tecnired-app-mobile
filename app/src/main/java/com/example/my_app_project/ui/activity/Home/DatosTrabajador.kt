@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.activity.Home
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -10,6 +11,7 @@ import com.example.my_app_project.R
 import com.example.my_app_project.databinding.ActivityDatosTrabajadorBinding
 import com.example.my_app_project.domain.model.UsuarioPerfil
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
+import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,6 +81,7 @@ class DatosTrabajador : AppCompatActivity() {
                 viewModel.registroExitoso.observe(this) { exitoso ->
                     if (exitoso) {
                         Toast.makeText(this, "Perfil registrado con éxito", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Error al guardar el perfil", Toast.LENGTH_SHORT).show()

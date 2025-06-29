@@ -1,60 +1,174 @@
 package com.example.my_app_project.ui.fragment
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.my_app_project.R
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.my_app_project.databinding.FragmentSolicitudesColaboradorBinding
+import com.example.my_app_project.presentation.servicioSolicitud.ServicioSolicitudViewModel
+import com.example.my_app_project.ui.adapter.SolicitudColaboradorAdapter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SolicitudesColaboradorFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class SolicitudesColaboradorFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private val viewModel: ServicioSolicitudViewModel by viewModels()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var binding: FragmentSolicitudesColaboradorBinding
+    private lateinit var adapter: SolicitudColaboradorAdapter
+
+    // Nuevo launcher para el permiso
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                obtenerUbicacion()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Permiso de ubicación denegado. No se pueden cargar solicitudes.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_solicitudes_colaborador, container, false)
+    ): View {
+        binding = FragmentSolicitudesColaboradorBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SolicitudesColaboradorFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SolicitudesColaboradorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        adapter = SolicitudColaboradorAdapter(emptyList())
+        binding.recyclerSolicitudesColaborador.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerSolicitudesColaborador.adapter = adapter
+
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        configurarFiltros()
+        verificarPermisosUbicacion()
+        observarSolicitudes()
+
+        binding.btnActualizarSolicitudes.setOnClickListener {
+            actualizarSolicitudesConUbicacion()
+        }
+    }
+
+    private fun configurarFiltros() {
+        binding.seekBarDistancia.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.textDistanciaSeleccionada.text = "$progress km"
+                actualizarSolicitudesConUbicacion()
+            }
+
+            override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
+        })
+
+        binding.switchOrden.setOnCheckedChangeListener { _, _ ->
+            actualizarSolicitudesConUbicacion()
+        }
+    }
+
+    private fun actualizarSolicitudesConUbicacion() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@addOnSuccessListener
+                    val distancia = binding.seekBarDistancia.progress.toDouble()
+                    val ascendente = binding.switchOrden.isChecked
+
+                    viewModel.obtenerSolicitudesFiltradas(
+                        uid = uid,
+                        lat = location.latitude,
+                        lon = location.longitude,
+                        distanciaMaxKm = distancia,
+                        ascendente = ascendente
+                    )
                 }
             }
+        }
+    }
+
+
+    private fun verificarPermisosUbicacion() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                obtenerUbicacion()
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Toast.makeText(
+                    context,
+                    "Se necesita permiso de ubicación para mostrar solicitudes cercanas.",
+                    Toast.LENGTH_LONG
+                ).show()
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
+
+    private fun obtenerUbicacion() {
+        try {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    cargarSolicitudes(location.latitude, location.longitude)
+                } else {
+                    Toast.makeText(context, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: SecurityException) {
+            Toast.makeText(context, "Error de seguridad al obtener ubicación", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun cargarSolicitudes(latitud: Double, longitud: Double) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        viewModel.obtenerSolicitudesFiltradas(
+            uid = uid,
+            lat = latitud,
+            lon = longitud,
+            distanciaMaxKm = 15.0,
+            ascendente = true
+        )
+    }
+
+    private fun observarSolicitudes() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.solicitudesConDistancia.collectLatest { lista ->
+                adapter.actualizarLista(lista)
+                binding.tvListaVacia.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
     }
 }
