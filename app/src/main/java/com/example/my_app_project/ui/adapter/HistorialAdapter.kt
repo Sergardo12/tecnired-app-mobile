@@ -3,47 +3,55 @@ package com.example.my_app_project.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.my_app_project.R
-import com.example.my_app_project.databinding.ItemHistoryBinding
 import com.example.my_app_project.domain.model.HistorialItem
 
-class HistorialAdapter : RecyclerView.Adapter<HistorialAdapter.ViewHolder>() {
+class HistorialAdapter(
+    private val onEliminarClick: (HistorialItem) -> Unit
+) : RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
 
-    private val lista = mutableListOf<HistorialItem>()
+    private var listaHistorial = listOf<HistorialItem>()
 
-    fun setData(nuevaLista: List<HistorialItem>) {
-        lista.clear()
-        lista.addAll(nuevaLista)
+    fun submitList(lista: List<HistorialItem>) {
+        listaHistorial = lista
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val imgPerfil = v.findViewById<ImageView>(R.id.imgPerfil)
-        val txtNombre = v.findViewById<TextView>(R.id.txtNombre)
-        val txtCategoria = v.findViewById<TextView>(R.id.txtCategoria)
-        val txtFecha = v.findViewById<TextView>(R.id.txtFecha)
-        val txtEstado = v.findViewById<TextView>(R.id.txtEstado)
-        val txtPrecio = v.findViewById<TextView>(R.id.txtPrecio)
+    inner class HistorialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val txtNombre: TextView = itemView.findViewById(R.id.txtNombre)
+        private val txtCategoria: TextView = itemView.findViewById(R.id.txtCategoria)
+        private val txtDescripcion: TextView = itemView.findViewById(R.id.txtDescripcion)
+        private val txtFecha: TextView = itemView.findViewById(R.id.txtFecha)
+        private val txtEstado: TextView = itemView.findViewById(R.id.txtEstado)
+        private val btnEliminar: ImageButton = itemView.findViewById(R.id.btnElminar)
 
         fun bind(item: HistorialItem) {
-            txtNombre.text = item.nombreHistorial
-            txtCategoria.text = item.categoriaHistorial
-            txtFecha.text = item.fechaFinalizadoHistorial
-            txtEstado.text = item.estadoHistorial
-            txtPrecio.text = "- S/ ${item.precioHistorial}"
-            Glide.with(imgPerfil.context).load(item.imagenHistorial).circleCrop().into(imgPerfil)
+            txtNombre.text = item.nombreCliente
+            txtCategoria.text = item.categoria
+            txtDescripcion.text = item.descripcion
+            txtFecha.text = item.fechaCreacion
+            txtEstado.text = item.estado
+
+            btnEliminar.setOnClickListener {
+                onEliminarClick(item)
+            }
         }
     }
 
-    override fun onCreateViewHolder(p: ViewGroup, v: Int): ViewHolder {
-        val view = LayoutInflater.from(p.context).inflate(R.layout.item_history, p, false)
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistorialViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_history, parent, false)
+        return HistorialViewHolder(view)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) = h.bind(lista[i])
-    override fun getItemCount(): Int = lista.size
+    override fun onBindViewHolder(holder: HistorialViewHolder, position: Int) {
+        holder.bind(listaHistorial[position])
+    }
+
+    override fun getItemCount(): Int = listaHistorial.size
 }
+
+

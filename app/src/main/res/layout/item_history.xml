@@ -49,6 +49,14 @@
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/txtDescripcion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descripción"
+                android:textSize="16sp"
+                android:textColor="@android:color/black" />
+
+            <TextView
                 android:id="@+id/txtFecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -64,21 +72,17 @@
                 android:textColor="@android:color/holo_green_dark"
                 android:textSize="14sp" />
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/txtPrecio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="- S/ 50.00"
-                android:textSize="14sp"
-                android:textColor="@android:color/black" />
-
+            <ImageButton
+                android:id="@+id/btnElminar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_eliminar">
+            </ImageButton>
         </LinearLayout>
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>
