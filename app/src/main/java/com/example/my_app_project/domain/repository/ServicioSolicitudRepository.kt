@@ -15,6 +15,6 @@ interface ServicioSolicitudRepository {
 
     suspend fun obtenerCategoriaIdPorNombre(nombre: String): String?
 
-
+    suspend fun aceptarSolicitud(solicitudId: String, colaboradorId: String): Result<Unit>
 
 }

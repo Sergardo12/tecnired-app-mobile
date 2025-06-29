@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt)
+    kotlin("plugin.parcelize")
 
 }
 // ✅ Coloca este bloque justo aquí, antes de `android { ... }`

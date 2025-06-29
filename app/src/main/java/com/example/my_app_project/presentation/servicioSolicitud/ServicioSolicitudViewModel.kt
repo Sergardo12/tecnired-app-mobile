@@ -23,6 +23,13 @@ class ServicioSolicitudViewModel @Inject constructor(
     val solicitudesConDistancia: StateFlow<List<Pair<ServicioSolicitud, Double>>> =
         _solicitudesConDistancia
 
+    private val _cargandoSolicitudes = MutableStateFlow(false)
+    val cargandoSolicitudes: StateFlow<Boolean> = _cargandoSolicitudes
+
+    private val _estadoAceptacion = MutableStateFlow<Result<Unit>?>(null)
+    val estadoAceptacion: StateFlow<Result<Unit>?> = _estadoAceptacion
+
+
     fun crearSolicitud(servicio: ServicioSolicitud) {
         viewModelScope.launch {
             val resultado = servicioSolicitudRepository.crearSolicitud(servicio)
@@ -42,6 +49,7 @@ class ServicioSolicitudViewModel @Inject constructor(
         ascendente: Boolean
     ) {
         viewModelScope.launch {
+            _cargandoSolicitudes.value = true
             val resultado = servicioSolicitudRepository.obtenerSolicitudesFiltradasPorDistancia(
                 uid = uid,
                 ubicacionLat = lat,
@@ -50,6 +58,16 @@ class ServicioSolicitudViewModel @Inject constructor(
                 ascendente = ascendente
             )
             _solicitudesConDistancia.value = resultado
+            _cargandoSolicitudes.value = false
         }
     }
+
+    fun aceptarSolicitud(solicitudId: String, colaboradorId: String) {
+        viewModelScope.launch {
+            val resultado = servicioSolicitudRepository.aceptarSolicitud(solicitudId, colaboradorId)
+            _estadoAceptacion.value = resultado
+        }
+    }
+
+
 }

@@ -8,7 +8,8 @@ import com.example.my_app_project.domain.model.ServicioSolicitud
 import java.util.concurrent.TimeUnit
 
 class SolicitudColaboradorAdapter(
-    private var lista: List<Pair<ServicioSolicitud, Double>>
+    private var lista: List<Pair<ServicioSolicitud, Double>>,
+    private val onItemClick: (ServicioSolicitud, Double) -> Unit
 ) : RecyclerView.Adapter<SolicitudColaboradorAdapter.SolicitudViewHolder>() {
 
     inner class SolicitudViewHolder(val binding: ItemServiceBinding) :
@@ -31,6 +32,10 @@ class SolicitudColaboradorAdapter(
         holder.binding.descripcionService.text = solicitud.descripcion
         holder.binding.distanciaService.text = "${"%.2f".format(distancia)} km"
         holder.binding.fechaService.text = obtenerTiempoRelativo(solicitud.fechaCreacion)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(solicitud, distancia)
+        }
     }
 
     fun actualizarLista(nuevaLista: List<Pair<ServicioSolicitud, Double>>) {

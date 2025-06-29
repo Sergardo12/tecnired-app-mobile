@@ -7,7 +7,9 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.my_app_project.ui.fragment.HomeFragment"
-        android:label="Inicio" />
+        android:label="Inicio" >
+
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
@@ -36,6 +38,16 @@
     <fragment
         android:id="@+id/solicitudesColaboradorFragment"
         android:name="com.example.my_app_project.ui.fragment.SolicitudesColaboradorFragment"
-        android:label="Solicitudes" />
+        android:label="SolicitudesColaboradorFragment">
+
+        <action
+                android:id="@+id/action_solicitudesColaborador_to_detalleSolicitudColaborador"
+                app:destination="@id/detalleSolicitudColaborador" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detalleSolicitudColaborador"
+        android:name="com.example.my_app_project.ui.fragment.DetalleSolicitudColaboradorFragment"
+        android:label="DetalleSolicitudColaboradorFragment"/>
 
 </navigation>

@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.my_app_project.databinding.FragmentSolicitudesColaboradorBinding
 import com.example.my_app_project.presentation.servicioSolicitud.ServicioSolicitudViewModel
@@ -32,7 +33,6 @@ class SolicitudesColaboradorFragment : Fragment() {
     private lateinit var binding: FragmentSolicitudesColaboradorBinding
     private lateinit var adapter: SolicitudColaboradorAdapter
 
-    // Nuevo launcher para el permiso
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -57,17 +57,27 @@ class SolicitudesColaboradorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = SolicitudColaboradorAdapter(emptyList())
+        adapter = SolicitudColaboradorAdapter(emptyList()) { solicitud, distancia ->
+            val bundle = Bundle().apply {
+                putParcelable("solicitud", solicitud)
+                putDouble("distancia", distancia)
+            }
+
+            findNavController().navigate(
+                com.example.my_app_project.R.id.action_solicitudesColaborador_to_detalleSolicitudColaborador,
+                bundle
+            )
+        }
+
         binding.recyclerSolicitudesColaborador.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerSolicitudesColaborador.adapter = adapter
-
-
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         configurarFiltros()
         verificarPermisosUbicacion()
         observarSolicitudes()
+        observarCarga()
 
         binding.btnActualizarSolicitudes.setOnClickListener {
             actualizarSolicitudesConUbicacion()
@@ -91,28 +101,35 @@ class SolicitudesColaboradorFragment : Fragment() {
     }
 
     private fun actualizarSolicitudesConUbicacion() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        binding.progressCarga.visibility = View.VISIBLE
+
+        try {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@addOnSuccessListener
+                    val lat = location.latitude
+                    val lon = location.longitude
                     val distancia = binding.seekBarDistancia.progress.toDouble()
-                    val ascendente = binding.switchOrden.isChecked
+                    val ordenAsc = binding.switchOrden.isChecked
 
                     viewModel.obtenerSolicitudesFiltradas(
-                        uid = uid,
-                        lat = location.latitude,
-                        lon = location.longitude,
+                        uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@addOnSuccessListener,
+                        lat = lat,
+                        lon = lon,
                         distanciaMaxKm = distancia,
-                        ascendente = ascendente
+                        ascendente = ordenAsc
                     )
+                } else {
+                    Toast.makeText(context, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+                    binding.progressCarga.visibility = View.GONE
                 }
+            }.addOnFailureListener {
+                binding.progressCarga.visibility = View.GONE
             }
+        } catch (e: SecurityException) {
+            Toast.makeText(context, "Error de seguridad al obtener ubicación", Toast.LENGTH_SHORT).show()
+            binding.progressCarga.visibility = View.GONE
         }
     }
-
 
     private fun verificarPermisosUbicacion() {
         when {
@@ -139,16 +156,21 @@ class SolicitudesColaboradorFragment : Fragment() {
     }
 
     private fun obtenerUbicacion() {
+        binding.progressCarga.visibility = View.VISIBLE
         try {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 if (location != null) {
                     cargarSolicitudes(location.latitude, location.longitude)
                 } else {
                     Toast.makeText(context, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+                    binding.progressCarga.visibility = View.GONE
                 }
+            }.addOnFailureListener {
+                binding.progressCarga.visibility = View.GONE
             }
         } catch (e: SecurityException) {
             Toast.makeText(context, "Error de seguridad al obtener ubicación", Toast.LENGTH_SHORT).show()
+            binding.progressCarga.visibility = View.GONE
         }
     }
 
@@ -168,6 +190,15 @@ class SolicitudesColaboradorFragment : Fragment() {
             viewModel.solicitudesConDistancia.collectLatest { lista ->
                 adapter.actualizarLista(lista)
                 binding.tvListaVacia.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+                binding.progressCarga.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun observarCarga() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.cargandoSolicitudes.collectLatest { cargando ->
+                binding.progressCarga.visibility = if (cargando) View.VISIBLE else View.GONE
             }
         }
     }

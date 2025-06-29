@@ -1,11 +1,9 @@
 package com.example.my_app_project.data.repository
 
-import com.example.my_app_project.domain.model.ServicioPost
+
 import com.example.my_app_project.domain.model.ServicioSolicitud
-import com.example.my_app_project.domain.repository.ServicioPostRepository
 import com.example.my_app_project.domain.repository.ServicioSolicitudRepository
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.math.atan2
@@ -109,4 +107,19 @@ class ServicioSolicitudRepositoryImpl @Inject constructor(
             emptyList()
         }
     }
+
+    override suspend fun aceptarSolicitud(solicitudId: String, colaboradorId: String): Result<Unit> {
+        return try {
+            val docRef = firestore.collection("servicios_solicitados").document(solicitudId)
+            val updates = mapOf(
+                "colaboradorId" to colaboradorId,
+                "estado" to "aceptado"
+            )
+            docRef.update(updates).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }
