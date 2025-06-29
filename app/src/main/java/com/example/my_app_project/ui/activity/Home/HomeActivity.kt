@@ -38,7 +38,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        viewModel.crearHistorial()
         userviewModel.cargarUsuario()
 
         val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)

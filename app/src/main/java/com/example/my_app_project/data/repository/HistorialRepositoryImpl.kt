@@ -3,13 +3,8 @@ package com.example.my_app_project.data.repository
 import com.example.my_app_project.domain.model.HistorialItem
 import com.example.my_app_project.domain.repository.HistorialRepository
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
-import com.google.firebase.firestore.Query
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -17,50 +12,94 @@ class HistorialRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : HistorialRepository {
 
-    override suspend fun generarHistorial() {
-        val servicios = db.collection("servicio").get().await()
-        val perfiles = db.collection("userperfil").get().await()
+    override fun obtenerHistorial(callback: (List<HistorialItem>) -> Unit) {
+        db.collection("servicios_solicitados")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val historialList = mutableListOf<HistorialItem>()
+                val documentos = snapshot.documents
 
-        val perfilMap = perfiles.documents.associateBy { it.getString("uid") }
+                documentos.forEach { doc ->
+                    val categoriaId = doc.getString("categoriaId") ?: ""
+                    val clienteId = doc.getString("clienteId") ?: ""
+                    val descripcion = doc.getString("descripcion") ?: ""
+                    val direccion = doc.getString("direccion") ?: ""
 
-        val historialSnapshot = db.collection("historial").get().await()
-        val historialExistente = historialSnapshot.documents.map {
-            it.getString("fechaFinalizadoHistorial") to it.getString("nombreHistorial")
-        }.toSet()
+                    val fechaMillis = doc.getLong("fechaCreacion") ?: 0L
+                    val fechaCreacion = Date(fechaMillis).let {
+                        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        formato.format(it)
+                    }
 
-        servicios.documents.forEach { servicioDoc ->
-            val uid = servicioDoc.getString("uid") ?: return@forEach
-            val perfilDoc = perfilMap[uid] ?: return@forEach
+                    val estado = doc.getString("estado") ?: ""
 
-            val fechaTimestamp = servicioDoc.getTimestamp("fechaFinalizadoServicio")
-            val fechaFormateada = fechaTimestamp?.toDate()?.let {
-                SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault()).format(it)
-            } ?: ""
+                    val historialItem = HistorialItem(
+                        id = doc.id,
+                        descripcion = descripcion,
+                        direccion = direccion,
+                        fechaCreacion = fechaCreacion,
+                        estado = estado,
+                        fechaMillis = fechaMillis // ➕ lo añadimos aquí
+                    )
 
-            val nombreHistorial = perfilDoc.getString("nombreUserperfil") ?: ""
+                    // Fetch categoría y cliente
+                    obtenerDatosCompletos(categoriaId, clienteId) { categoria, nombreCliente ->
+                        historialList.add(
+                            historialItem.copy(
+                                categoria = categoria,
+                                nombreCliente = nombreCliente
+                            )
+                        )
 
-            // Verifica si ya existe
-            if (historialExistente.contains(fechaFormateada to nombreHistorial)) return@forEach
+                        // Cuando terminamos de cargar todos los documentos
+                        if (historialList.size == documentos.size) {
+                            // ➕ Ordenar antes de devolver
+                            val listaOrdenada = historialList.sortedByDescending { it.fechaMillis }
+                            callback(listaOrdenada)
+                        }
+                    }
+                }
 
-            val historial = HistorialItem(
-                nombreHistorial = nombreHistorial,
-                imagenHistorial = perfilDoc.getString("imagenUserperfil") ?: "",
-                categoriaHistorial = servicioDoc.getString("categoriaServicio") ?: "",
-                fechaFinalizadoHistorial = fechaFormateada,
-                estadoHistorial = servicioDoc.getString("estadoServicio") ?: "",
-                precioHistorial = servicioDoc.getString("precioServicio") ?: ""
-            )
-
-            db.collection("historial").add(historial).await()
-        }
+                if (documentos.isEmpty()) callback(emptyList())
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+    override fun eliminarServicio(servicioId: String, callback: (Boolean) -> Unit) {
+        db.collection("servicios_solicitados")
+            .document(servicioId)
+            .delete()
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
     }
 
-    override suspend fun obtenerHistorial(): List<HistorialItem> {
-        val snapshot = db.collection("historial")
-            .orderBy("fechaFinalizadoHistorial", Query.Direction.DESCENDING)
-            .get().await()
-        return snapshot.toObjects(HistorialItem::class.java)
+    private fun obtenerDatosCompletos(
+        categoriaId: String,
+        clienteId: String,
+        callback: (String, String) -> Unit
+    ) {
+        var categoria = "Categoría Desconocida"
+        var nombreCliente = "Usuario Desconocido"
+
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("categorias").document(categoriaId).get()
+            .addOnSuccessListener { catDoc ->
+                categoria = catDoc.getString("nombreCategoria") ?: categoria
+
+                db.collection("usuarios").document(clienteId)
+                    .collection("userData").document("perfil").get()
+                    .addOnSuccessListener { perfilDoc ->
+                        nombreCliente = perfilDoc.getString("nombre") ?: nombreCliente
+                        callback(categoria, nombreCliente)
+                    }
+                    .addOnFailureListener {
+                        callback(categoria, nombreCliente)
+                    }
+            }
+            .addOnFailureListener {
+                callback(categoria, nombreCliente)
+            }
     }
 }
-
-
