@@ -39,7 +39,7 @@ class FavoritosRepositoryImpl @Inject constructor(
                 }
 
                 favoritosOrdenados.forEach { favorito ->
-                    firestore.collection("userperfil")
+                    firestore.collection("perfilesPublicos")
                         .document(favorito.uid)
                         .get()
                         .addOnSuccessListener { docPerfil ->
@@ -47,7 +47,7 @@ class FavoritosRepositoryImpl @Inject constructor(
                             val categoria = docPerfil.getString("categoriaUserperfil") ?: ""
                             val descripcion = docPerfil.getString("especialidadUserperfil") ?: ""
                             val imagenUrl = docPerfil.getString("imagenUserperfil") ?: ""
-                            val rating = docPerfil.getDouble("rating")?.toFloat() ?: 0f
+                            val rating = docPerfil.getDouble("puntajeUserperfil")?.toFloat() ?: 0f
 
                             listaFinal.add(
                                 UsuarioFavorito(

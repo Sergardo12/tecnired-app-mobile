@@ -84,6 +84,33 @@
                 app:cornerRadius="16dp"
                 android:layout_marginStart="8dp"/>
 
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnMecanico"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mecánico"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnComputo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cómputo"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnReposteria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repostería"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+
         </LinearLayout>
     </HorizontalScrollView>
 

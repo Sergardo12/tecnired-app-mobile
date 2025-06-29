@@ -75,9 +75,12 @@ class FavoritesFragment : Fragment() {
 
 
 
-        binding.btnGasfitero.setOnClickListener { viewModel.filtrarPorCategoria("gasfiteria") }
-        binding.btnElectricista.setOnClickListener { viewModel.filtrarPorCategoria("electricidad") }
-        binding.btnCarpintero.setOnClickListener { viewModel.filtrarPorCategoria("carpinteria") }
+        binding.btnGasfitero.setOnClickListener { viewModel.filtrarPorCategoria("Gasfitería") }
+        binding.btnElectricista.setOnClickListener { viewModel.filtrarPorCategoria("Electricidad") }
+        binding.btnCarpintero.setOnClickListener { viewModel.filtrarPorCategoria("Carpinteria") }
+        binding.btnComputo.setOnClickListener { viewModel.filtrarPorCategoria("Cómputo") }
+        binding.btnMecanico.setOnClickListener { viewModel.filtrarPorCategoria("Mecánica") }
+        binding.btnReposteria.setOnClickListener { viewModel.filtrarPorCategoria("Repostería") }
         binding.btnall.setOnClickListener { viewModel.mostrarTodos()}
 
         viewModel.cargarFavoritos(uid)

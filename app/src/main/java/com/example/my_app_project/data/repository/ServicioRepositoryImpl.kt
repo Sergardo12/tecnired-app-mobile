@@ -11,7 +11,7 @@ class ServicioRepositoryImpl : ServicioRepository {
     private val auth = FirebaseAuth.getInstance()
 
     override fun obtenerServiciosPorCategoria(categoria: String, callback: (List<ServicioUser>) -> Unit) {
-        db.collection("userperfil")
+        db.collection("perfilesPublicos")
             .whereEqualTo("categoriaUserperfil", categoria)
             .get()
             .addOnSuccessListener { documents ->
@@ -22,7 +22,7 @@ class ServicioRepositoryImpl : ServicioRepository {
                         categoriaUserperfil = doc.getString("categoriaUserperfil") ?: "",
                         especialidadUserperfil = doc.getString("especialidadUserperfil") ?: "",
                         imagenUserperfil = doc.getString("imagenUserperfil") ?: "",
-                        calificacionUser = doc.getDouble("rating")?.toString() ?: "0.0"
+                        calificacionUser = doc.getDouble("puntajeUserperfil")?.toString() ?: "0.0"
                     )
                 }
                 callback(servicios)
@@ -34,7 +34,7 @@ class ServicioRepositoryImpl : ServicioRepository {
 
     override fun buscarServiciosPorTexto(texto: String, callback: (List<ServicioUser>) -> Unit) {
         obtenerIdsFavoritosDelUsuario { favoritosIds ->
-            db.collection("userperfil")
+            db.collection("perfilesPublicos")
                 .get()
                 .addOnSuccessListener { documents ->
                     val resultados = documents.map { doc ->
@@ -44,7 +44,7 @@ class ServicioRepositoryImpl : ServicioRepository {
                             categoriaUserperfil = doc.getString("categoriaUserperfil") ?: "",
                             especialidadUserperfil = doc.getString("especialidadUserperfil") ?: "",
                             imagenUserperfil = doc.getString("imagenUserperfil") ?: "",
-                            calificacionUser = doc.getDouble("rating")?.toString() ?: "0.0",
+                            calificacionUser = doc.getDouble("puntajeUserperfil")?.toString() ?: "0.0",
                             esFavorito = favoritosIds.contains(doc.id)
                         )
                     }.filter { servicio ->
@@ -60,7 +60,7 @@ class ServicioRepositoryImpl : ServicioRepository {
     }
 
     override fun obtenerTodosLosServicios(callback: (List<ServicioUser>) -> Unit) {
-        db.collection("userperfil")
+        db.collection("perfilesPublicos")
             .get()
             .addOnSuccessListener { documents ->
                 val servicios = documents.map { doc ->
@@ -70,7 +70,7 @@ class ServicioRepositoryImpl : ServicioRepository {
                         categoriaUserperfil = doc.getString("categoriaUserperfil") ?: "",
                         especialidadUserperfil = doc.getString("especialidadUserperfil") ?: "",
                         imagenUserperfil = doc.getString("imagenUserperfil") ?: "",
-                        calificacionUser = doc.getDouble("rating")?.toString() ?: "0.0"
+                        calificacionUser = doc.getDouble("puntajeUserperfil")?.toString() ?: "0.0"
                     )
                 }
                 callback(servicios)
@@ -96,7 +96,7 @@ class ServicioRepositoryImpl : ServicioRepository {
             }
     }
     override fun obtenerUsuarioPorUid(uid: String, callback: (ServicioUser?) -> Unit) {
-        db.collection("userperfil")
+        db.collection("perfilesPublicos")
             .document(uid)
             .get()
             .addOnSuccessListener { doc ->
