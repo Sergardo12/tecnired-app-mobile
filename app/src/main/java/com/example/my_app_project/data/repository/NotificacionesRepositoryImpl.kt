@@ -17,7 +17,7 @@ class NotificacionesRepositoryImpl @Inject constructor(
         db.collection("usuarios")
             .document(uid)
             .collection("noti")
-            .orderBy("fecha", Query.Direction.DESCENDING)
+            .orderBy("fechaCreacion", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
                 val lista = snapshot.map { doc ->

@@ -2,6 +2,7 @@ package com.example.my_app_project.ui.activity.Home
 
 import android.content.Intent
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -21,11 +22,14 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.app.ActivityCompat
 import com.example.my_app_project.presentation.historial.HistorialViewModel
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
 import com.example.my_app_project.ui.activity.Register.FormInicioSesion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
 
@@ -40,6 +44,15 @@ class HomeActivity : AppCompatActivity() {
 
         viewModel.crearHistorial()
         userviewModel.cargarUsuario()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                1001
+            )
+        }
+
 
         val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
@@ -78,6 +91,9 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
+
+
+        actualizarTokenSiExiste()
 
 
 
@@ -216,5 +232,15 @@ class HomeActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    fun actualizarTokenSiExiste() {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@addOnSuccessListener
+            val data = mapOf("tokenFCM" to token)
+            FirebaseFirestore.getInstance().collection("usuarios")
+                .document(uid)
+                .set(data, SetOptions.merge())
+        }
     }
 }

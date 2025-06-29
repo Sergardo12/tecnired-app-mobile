@@ -111,15 +111,51 @@ class ServicioSolicitudRepositoryImpl @Inject constructor(
     override suspend fun aceptarSolicitud(solicitudId: String, colaboradorId: String): Result<Unit> {
         return try {
             val docRef = firestore.collection("servicios_solicitados").document(solicitudId)
-            val updates = mapOf(
-                "colaboradorId" to colaboradorId,
-                "estado" to "aceptado"
-            )
-            docRef.update(updates).await()
-            Result.success(Unit)
+            val snapshot = docRef.get().await()
+            val solicitud = snapshot.toObject(ServicioSolicitud::class.java)
+
+            if (solicitud != null) {
+                // Actualizar estado y colaborador
+                val updates = mapOf(
+                    "colaboradorId" to colaboradorId,
+                    "estado" to "aceptado"
+                )
+                docRef.update(updates).await()
+
+                // Notificar cliente
+                val solicitudActualizada = solicitud.copy(colaboradorId = colaboradorId)
+                guardarNotificacionAlCliente(solicitudActualizada)
+
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Solicitud no encontrada"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
+    private suspend fun guardarNotificacionAlCliente(solicitud: ServicioSolicitud) {
+        val db = FirebaseFirestore.getInstance()
+        val notiRef = db.collection("usuarios")
+            .document(solicitud.clienteId)
+            .collection("noti")
+            .document()
+
+        val notificacion = mapOf(
+            "id" to notiRef.id,
+            "titulo" to "Solicitud aceptada",
+            "mensaje" to "Tu solicitud ha sido aceptada por un colaborador.",
+            "estado" to "no_leido",
+            "fechaCreacion" to System.currentTimeMillis(),
+            "solicitudId" to solicitud.id,
+            "categoriaId" to solicitud.categoriaId,
+            "colaboradorId" to solicitud.colaboradorId,
+            "direccion" to solicitud.direccion
+        )
+
+        notiRef.set(notificacion).await()
+    }
+
 
 }
