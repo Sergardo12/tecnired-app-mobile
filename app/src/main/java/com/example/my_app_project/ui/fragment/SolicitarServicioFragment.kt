@@ -240,7 +240,7 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
                 direccion = direccion,
                 descripcion = descripcion,
                 latitud = latLng.latitude,
-                longitud = latLng.longitude
+                longitud = latLng.longitude,
             )
             solicitudViewModel.crearSolicitud(solicitud)
         } else {

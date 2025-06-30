@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.my_app_project.domain.model.HistorialItem
 import com.example.my_app_project.domain.repository.HistorialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -64,5 +65,21 @@ class HistorialViewModel @Inject constructor(
     }
     fun mostrarTodos() {
         _historialFiltrado.postValue(_historialCompleto.value)
+    }
+    fun calificarColaborador(colaboradorId: String?, puntaje: Int, callback: (Boolean) -> Unit) {
+        if (colaboradorId.isNullOrBlank()) {
+            callback(false)
+            return
+        }
+
+        val docRef = FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(colaboradorId)
+            .collection("userData")
+            .document("perfilcolab")
+
+        docRef.update("puntajeUserperfil", puntaje)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
     }
 }

@@ -110,6 +110,13 @@ class HistoryFragment : Fragment() {
                     .addOnFailureListener {
                         Toast.makeText(requireContext(), "Error al actualizar", Toast.LENGTH_SHORT).show()
                     }
+            },
+            onCalificar = { colaboradorId, puntaje ->
+                viewModel.calificarColaborador(colaboradorId, puntaje) { exito ->
+                    if (exito) {
+                        Toast.makeText(context, "Colaborador calificado", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         )
         binding.recyclerHistorial.layoutManager = LinearLayoutManager(requireContext())
