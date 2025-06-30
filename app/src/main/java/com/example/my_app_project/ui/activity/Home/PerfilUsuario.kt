@@ -48,7 +48,7 @@ class PerfilUsuario : AppCompatActivity() {
                 }
             }
         } else {
-            usuarioViewModel.cargarPerfilColaborador() // por si entras desde otro lugar
+            usuarioViewModel.cargarPerfilColaborador()
             usuarioViewModel.usuario.observe(this) { usuario ->
                 usuario?.let {
                     binding.txtNombre.text = "${it.nombre} ${it.apellido}"

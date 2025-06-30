@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import android.widget.Toast
 import com.example.my_app_project.domain.model.Favorito
 import com.example.my_app_project.domain.model.ServicioUser
 import com.example.my_app_project.presentation.favoritos.FavoritosViewModel
+import com.example.my_app_project.ui.activity.Home.PerfilUsuario
 import com.google.firebase.auth.FirebaseAuth
 
 @AndroidEntryPoint
@@ -38,25 +40,34 @@ class SearchFragment : Fragment() {
 
         val uidUsuario = FirebaseAuth.getInstance().currentUser?.uid
 
-        adapter = SearchAdapter(emptyList(), object : SearchAdapter.OnFavoritoClickListener {
-            override fun onFavoritoClick(servicio: ServicioUser) {
-                uidUsuario?.let {
-                    val favorito = Favorito(uid = servicio.uidUserperfil)
-                    val nuevoEstado = !servicio.esFavorito
+        adapter = SearchAdapter(
+            emptyList(),
+            object : SearchAdapter.OnFavoritoClickListener {
+                override fun onFavoritoClick(servicio: ServicioUser) {
+                    uidUsuario?.let {
+                        val favorito = Favorito(uid = servicio.uidUserperfil)
+                        val nuevoEstado = !servicio.esFavorito
 
-                    favoritosViewModel.toggleFavorito(it, favorito, esFavorito = servicio.esFavorito) {
-                        servicio.esFavorito = nuevoEstado
-                        adapter.actualizarFavorito(servicio.uidUserperfil, nuevoEstado)
-                        val mensaje = if (nuevoEstado) {
-                            "Agregado a favoritos"
-                        } else {
-                            "Eliminado de favoritos"
+                        favoritosViewModel.toggleFavorito(it, favorito, esFavorito = servicio.esFavorito) {
+                            servicio.esFavorito = nuevoEstado
+                            adapter.actualizarFavorito(servicio.uidUserperfil, nuevoEstado)
+                            val mensaje = if (nuevoEstado) {
+                                "Agregado a favoritos"
+                            } else {
+                                "Eliminado de favoritos"
+                            }
+                            Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
                         }
-                        Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
                     }
                 }
+            },
+            onItemClick = { servicio -> // NUEVO
+                val intent = Intent(requireContext(), PerfilUsuario::class.java)
+                intent.putExtra("uidColaborador", servicio.uidUserperfil)
+                startActivity(intent)
             }
-        })
+        )
+
 
         binding.recyclerBusqueda.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerBusqueda.adapter = adapter

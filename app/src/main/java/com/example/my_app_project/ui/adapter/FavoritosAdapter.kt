@@ -14,7 +14,8 @@ import com.example.my_app_project.presentation.favoritos.FavoritosViewModel
 class FavoritosAdapter(
     private var listaFavoritos: List<UsuarioFavorito>,
     private val viewModel: FavoritosViewModel,
-    private val uidUsuario: String
+    private val uidUsuario: String,
+    private val onItemClick: (UsuarioFavorito) -> Unit
 ) : RecyclerView.Adapter<FavoritosAdapter.FavoritosViewHolder>()
  {
 
@@ -47,6 +48,10 @@ class FavoritosAdapter(
                      eliminarFavoritoPorId(favorito.uid)
                      Toast.makeText(holder.itemView.context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
                  }
+             }
+
+             holder.itemView.setOnClickListener {
+                 onItemClick(favorito)
              }
 
          }
