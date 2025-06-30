@@ -69,4 +69,11 @@ class UsuarioViewModel @Inject constructor(
         }
     }
 
+    fun cargarPerfilPorUid(uid: String) {
+        viewModelScope.launch {
+            _perfilColaborador.value = userRepository.obtenerPerfilPorUid(uid)
+        }
+    }
+
+
 }

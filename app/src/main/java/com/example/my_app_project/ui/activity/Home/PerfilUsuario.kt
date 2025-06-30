@@ -30,22 +30,43 @@ class PerfilUsuario : AppCompatActivity() {
         }
 
         usuarioViewModel.cargarUsuario()
-        usuarioViewModel.usuario.observe(this) { usuario ->
-            usuario?.let {
-                binding.txtNombre.text = "${it.nombre} ${it.apellido}"
-                binding.txtTelefono.text = it.telefono
+
+        val uidColaborador = intent.getStringExtra("uidColaborador")
+
+        if (uidColaborador != null) {
+            usuarioViewModel.cargarPerfilPorUid(uidColaborador)
+            usuarioViewModel.perfilColaborador.observe(this) { perfil ->
+                perfil?.let {
+                    binding.txtCategoria.text = it.categoriaUserperfil
+                    binding.txtEspecialidad.text = it.especialidadUserperfil
+                    binding.txtTarifa.text = it.puntajeUserperfil.toString()
+                    binding.txtDescripcion.text = it.descripcionUserperfil
+                    binding.txtHorario.text = it.horarioUserperfil
+                    binding.txtNombre.text = it.nombreUserperfil
+                    binding.txtTelefono.text = it.numeroUserperfil
+                    binding.txtCorreo.text = it.correoUserperfil
+                }
+            }
+        } else {
+            usuarioViewModel.cargarPerfilColaborador() // por si entras desde otro lugar
+            usuarioViewModel.usuario.observe(this) { usuario ->
+                usuario?.let {
+                    binding.txtNombre.text = "${it.nombre} ${it.apellido}"
+                    binding.txtTelefono.text = it.telefono
+                }
+            }
+            usuarioViewModel.perfilColaborador.observe(this) { perfil ->
+                perfil?.let {
+                    binding.txtCategoria.text = it.categoriaUserperfil
+                    binding.txtEspecialidad.text = it.especialidadUserperfil
+                    binding.txtTarifa.text = it.puntajeUserperfil.toString()
+                    binding.txtDescripcion.text = it.descripcionUserperfil
+                    binding.txtHorario.text = it.horarioUserperfil
+                }
             }
         }
-        usuarioViewModel.cargarPerfilColaborador()
-        usuarioViewModel.perfilColaborador.observe(this) { perfil ->
-            perfil?.let {
-                binding.txtCategoria.text = it.categoriaUserperfil
-                binding.txtEspecialidad.text = it.especialidadUserperfil
-                binding.txtTarifa.text = it.puntajeUserperfil.toString()
-                binding.txtDescripcion.text = it.descripcionUserperfil
-                binding.txtHorario.text = it.horarioUserperfil
-            }
-        }
+
+
 
 
         binding.btnVolver.setOnClickListener {

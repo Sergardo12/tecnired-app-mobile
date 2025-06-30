@@ -92,7 +92,7 @@ class UserRepositoryImpl @Inject constructor(
             .collection("userData")
             .document("perfilcolab")
 
-        val publicoRef = firestore.collection("perfilesPublicos").document(uid)
+        val publicoRef = firestore.collection("sdfwer").document(uid)
 
         val userData = mapOf(
             "categoriaUserperfil" to perfil.categoriaUserperfil,
@@ -176,5 +176,26 @@ class UserRepositoryImpl @Inject constructor(
             )
         } else null
     }
+
+    override suspend fun obtenerPerfilPorUid(uid: String): UsuarioPerfil? {
+        val ref = firestore.collection("perfilesPublicos").document(uid)
+        val snapshot = ref.get().await()
+
+        return if (snapshot.exists()) {
+            UsuarioPerfil(
+                categoriaUserperfil = snapshot.getString("categoriaUserperfil") ?: "",
+                correoUserperfil = snapshot.getString("correoUserperfil") ?: "",
+                especialidadUserperfil = snapshot.getString("especialidadUserperfil") ?: "",
+                imagenUserperfil = snapshot.getString("imagenUserperfil") ?: "",
+                nombreUserperfil = snapshot.getString("nombreUserperfil") ?: "",
+                descripcionUserperfil = snapshot.getString("descripcionUserperfil") ?: "",
+                horarioUserperfil = snapshot.getString("horarioUserperfil") ?: "",
+                numeroUserperfil = snapshot.getString("numeroUserperfil") ?: "",
+                puntajeUserperfil = snapshot.getDouble("puntajeUserperfil") ?: 0.0,
+                uid = snapshot.id
+            )
+        } else null
+    }
+
 
 }
