@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.my_app_project.R
 import com.example.my_app_project.domain.model.MejorColaborador
+import com.example.my_app_project.ui.activity.Home.PerfilUsuario
 
 /**
  * Adaptador para mostrar una lista de los mejores colaboradores en un RecyclerView.
@@ -51,7 +53,10 @@ class MejorColaboradorAdapter(
 
 
             botonContactar.setOnClickListener {
-                onContactarClick(colaborador)
+                val context = itemView.context
+                val intent = Intent(context, PerfilUsuario::class.java)
+                intent.putExtra("uidColaborador", colaborador.uidUserperfil)
+                context.startActivity(intent)
             }
         }
     }

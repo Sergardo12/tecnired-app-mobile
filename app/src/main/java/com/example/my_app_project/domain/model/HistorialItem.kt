@@ -10,4 +10,5 @@ data class HistorialItem(
     val fechaMillis: Long = 0L,
     val estado: String = "",
     val nombreColaborador: String = "",
+    val colaboradorId: String? = null
 )

@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.my_app_project.ui.activity.Home.PerfilUsuario
 
 @AndroidEntryPoint
 class FavoritesFragment : Fragment() {
@@ -35,7 +37,16 @@ class FavoritesFragment : Fragment() {
 
         uid = FirebaseAuth.getInstance().currentUser?.uid ?: return binding.root
 
-        favoritosAdapter = FavoritosAdapter(emptyList(), viewModel, uid)
+        favoritosAdapter = FavoritosAdapter(
+            emptyList(),
+            viewModel,
+            uid
+        ) { favorito ->
+            val intent = Intent(requireContext(), PerfilUsuario::class.java)
+            intent.putExtra("uidColaborador", favorito.uid)
+            startActivity(intent)
+        }
+
         binding.recyclerFavoritos.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerFavoritos.adapter = favoritosAdapter
 

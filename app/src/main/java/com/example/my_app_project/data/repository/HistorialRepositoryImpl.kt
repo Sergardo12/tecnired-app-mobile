@@ -45,6 +45,7 @@ class HistorialRepositoryImpl @Inject constructor(
                             val descripcion = doc.getString("descripcion") ?: ""
                             val direccion = doc.getString("direccion") ?: ""
 
+
                             val fechaMillis = doc.getLong("fechaCreacion") ?: 0L
                             val fechaCreacion = Date(fechaMillis).let {
                                 val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -59,7 +60,8 @@ class HistorialRepositoryImpl @Inject constructor(
                                 direccion = direccion,
                                 fechaCreacion = fechaCreacion,
                                 estado = estado,
-                                fechaMillis = fechaMillis
+                                fechaMillis = fechaMillis,
+                                colaboradorId = colaboradorId
                             )
 
                             obtenerDatosCompletos(categoriaId, clienteId, colaboradorId) { categoria, nombreCliente, nombreColaborador ->
@@ -94,7 +96,6 @@ class HistorialRepositoryImpl @Inject constructor(
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { callback(false) }
     }
-
     private fun obtenerDatosCompletos(
         categoriaId: String,
         clienteId: String,

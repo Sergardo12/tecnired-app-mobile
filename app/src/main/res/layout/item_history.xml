@@ -84,6 +84,12 @@
                 android:background="@drawable/ic_detalles"
                 android:layout_marginBottom="5dp"/>
             <ImageButton
+                android:id="@+id/btnCalificar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_calificar_star"
+                android:layout_marginBottom="5dp"/>
+            <ImageButton
                 android:id="@+id/btnReiniciar"
                 android:layout_width="30dp"
                 android:layout_height="30dp"

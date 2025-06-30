@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +18,8 @@ import com.example.my_app_project.domain.model.HistorialItem
 class HistorialAdapter(
     private val rolUsuario: String,
     private val onEliminarClick: (HistorialItem) -> Unit,
-    private val onActualizarEstado: (String, String) -> Unit
+    private val onActualizarEstado: (String, String) -> Unit,
+    private val onCalificar: (String, Int) -> Unit
 ) : RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
 
     private var listaHistorial = listOf<HistorialItem>()
@@ -38,6 +41,7 @@ class HistorialAdapter(
         private val btnEliminar: ImageButton = itemView.findViewById(R.id.btnElminar)
         private val btnDetalles: ImageButton = itemView.findViewById(R.id.btnDetalles)
         private val btnReiniciar: ImageButton = itemView.findViewById(R.id.btnReiniciar)
+        private val btnCalificar: ImageButton = itemView.findViewById(R.id.btnCalificar)
 
         fun bind(item: HistorialItem) {
             txtNombre.text = item.nombreCliente
@@ -63,9 +67,32 @@ class HistorialAdapter(
             }
             btnDetalles.visibility = when {
                 item.estado.equals("aceptado", ignoreCase = true) && rolUsuario == "colaborador" -> View.VISIBLE
+                else -> View.GONE
+            }
+            btnCalificar.visibility = when {
                 item.estado.equals("finalizado", ignoreCase = true) && rolUsuario == "cliente" -> View.VISIBLE
                 else -> View.GONE
             }
+            btnCalificar.setOnClickListener {
+                val context = itemView.context
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_calificacion, null)
+                val ratingBar = dialogView.findViewById<RatingBar>(R.id.ratingBar)
+
+                AlertDialog.Builder(context)
+                    .setView(dialogView)
+                    .setPositiveButton("Aceptar") { _, _ ->
+                        val puntaje = ratingBar.rating.toInt()
+                        val colaboradorId = item.colaboradorId
+                        if (!colaboradorId.isNullOrBlank()) {
+                            onCalificar(colaboradorId, puntaje)
+                        } else {
+                            Toast.makeText(context, "Colaborador no encontrado.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+
             btnDetalles.setOnClickListener { view ->
                 if (rolUsuario.equals("colaborador", ignoreCase = true) &&
                     item.estado.equals("aceptado", ignoreCase = true)) {
@@ -102,7 +129,6 @@ class HistorialAdapter(
                     .setTitle("¿Solicitar de nuevo?")
                     .setMessage("¿Quieres solicitar el mismo servicio?")
                     .setPositiveButton("Aceptar") { _, _ ->
-                        // Aquí actualizas el estado
                         onActualizarEstado(item.id, "pendiente")
                     }
                     .setNegativeButton("Cancelar", null)

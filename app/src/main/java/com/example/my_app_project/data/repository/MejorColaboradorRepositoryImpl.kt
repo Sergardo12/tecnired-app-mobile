@@ -14,7 +14,7 @@ class MejorColaboradorRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): MejorColaboradorRepository {
     override fun obtenerMejoresColaboradores(): Flow<List<MejorColaborador>> = callbackFlow {
-        val collection = firestore.collection("userperfil")
+        val collection = firestore.collection("perfilesPublicos")
             .orderBy("puntajeUserperfil", Query.Direction.DESCENDING)
             .limit(5) // muestra los 5 mejores
         val listener = collection.addSnapshotListener{ snapshot, error ->

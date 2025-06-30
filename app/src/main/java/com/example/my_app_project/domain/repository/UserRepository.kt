@@ -16,4 +16,5 @@ interface UserRepository {
     suspend fun obtenerUsuario(): Usuario?
     suspend fun obtenerUsuLogin(): Usuario?
     fun verificarSiTienePerfil(uid: String, callback: (Boolean) -> Unit)
+    suspend fun obtenerPerfilPorUid(uid: String): UsuarioPerfil?
 }

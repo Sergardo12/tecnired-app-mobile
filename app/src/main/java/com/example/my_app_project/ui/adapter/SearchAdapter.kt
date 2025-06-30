@@ -11,7 +11,8 @@ import com.example.my_app_project.domain.model.ServicioUser
 
 class SearchAdapter(
     private var listaTrabajadores: List<ServicioUser>,
-    private val onFavoritoClickListener: OnFavoritoClickListener
+    private val onFavoritoClickListener: OnFavoritoClickListener,
+    private val onItemClick: (ServicioUser) -> Unit
 ) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     class SearchViewHolder(val binding: ItemTrabajadorBinding) : RecyclerView.ViewHolder(binding.root)
@@ -45,6 +46,10 @@ class SearchAdapter(
 
             btnFavorito.setOnClickListener {
                 onFavoritoClickListener.onFavoritoClick(trabajador)
+            }
+
+            holder.itemView.setOnClickListener {
+                onItemClick(trabajador)
             }
         }
     }
