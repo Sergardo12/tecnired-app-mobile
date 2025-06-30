@@ -9,9 +9,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.example.my_app_project.databinding.DialogCrearPostBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.my_app_project.presentation.serviciosPost.ServicioPostViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CrearPostBottomSheet : BottomSheetDialogFragment() {
 
     private var _binding: DialogCrearPostBinding? = null
@@ -65,7 +68,7 @@ class CrearPostBottomSheet : BottomSheetDialogFragment() {
                 viewModel.subirImagenYCrearPost(bytes, nombreArchivo, descripcion, tarifa)
                 dismiss() // Cierra el bottom sheet después de subir
             } else {
-                // Manejar campos vacíos
+                Toast.makeText(requireContext(), "Completa todos los campos y selecciona una imagen", Toast.LENGTH_SHORT).show()
             }
         }
 

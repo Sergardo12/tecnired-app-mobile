@@ -1,5 +1,6 @@
 package com.example.my_app_project.data.repository
 
+import android.util.Log
 import com.example.my_app_project.domain.repository.CloudinaryRepository
 import com.example.my_app_project.network.ServicioCloudinary
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -24,7 +25,9 @@ class CloudinaryRepositoryImpl @Inject constructor(
         val respuesta = servicioCloudinary.subirImagen(nombreNube, archivoPart, uploadPreset)
 
         if (respuesta.isSuccessful) {
-            return respuesta.body()?.secure_url ?: throw Exception("La URL de la imagen está vacía")
+            val url = respuesta.body()?.secure_url?: throw Exception("La url de la imagen esta vacia")
+            Log.d("Cloudinary", "Imagen subida con URL: $url")
+            return url
         } else {
             throw Exception("Error al subir imagen: ${respuesta.errorBody()?.string()}")
         }

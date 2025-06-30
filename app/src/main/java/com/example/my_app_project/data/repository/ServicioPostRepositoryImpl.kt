@@ -1,5 +1,6 @@
 package com.example.my_app_project.data.repository
 
+import android.util.Log
 import com.example.my_app_project.domain.model.ServicioPost
 import com.example.my_app_project.domain.repository.ServicioPostRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -37,6 +38,8 @@ class ServicioPostRepositoryImpl @Inject constructor(
     ) {
         val post = crearPostDesdePerfil(urlImagen, descripcion, tarifa)
         crearServicioPost(post)
+        Log.d("ServicioPostRepositoryImpl", "Post creado: $post")
+
     }
 
     private suspend fun crearPostDesdePerfil(
@@ -45,33 +48,33 @@ class ServicioPostRepositoryImpl @Inject constructor(
         tarifa: String
     ): ServicioPost {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
+
             ?: throw Exception("Usuario no autenticado")
 
-        val docSnapshot = firestore.collection("perfilesPúblicos").document(uid).get().await()
+        val docSnapshot = firestore.collection("perfilesPublicos").document(uid).get().await()
 
         if (!docSnapshot.exists()) {
             throw Exception("Perfil no encontrado")
         }
 
         val nombre = docSnapshot.getString("nombreUserperfil") ?: ""
-        val apellido = docSnapshot.getString("apellidoUserperfil") ?: ""
         val categoria = docSnapshot.getString("categoriaUserperfil") ?: ""
 
         return ServicioPost(
             uidColaborador = uid,
             imagenServicioPost = urlImagen,
             nombreUsuarioServicioPost = nombre,
-            apellidoUsuarioServicioPost = apellido,
             categoriaServicioPost = categoria,
             descripcionServicioPost = descripcion,
             tarifaServicioPost = tarifa
         )
     }
-    private suspend fun crearServicioPost(post: ServicioPost) {
+    fun crearServicioPost(servicioPost: ServicioPost) {
         firestore.collection("serviciosPost")
-            .add(post)
-            .await()
+            .add(servicioPost)
+            .addOnFailureListener { throw it }
     }
+
 
 
 }

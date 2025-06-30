@@ -55,7 +55,7 @@ class ServicioPostAdapter : ListAdapter<ServicioPost, ServicioPostAdapter.Servic
                 .into(imagen)
 
             // Mostrar nombre completo del usuario
-            val nombreCompleto = "${servicio.nombreUsuarioServicioPost} ${servicio.apellidoUsuarioServicioPost}"
+            val nombreCompleto = "${servicio.nombreUsuarioServicioPost} "
             nombreUsuario.text = nombreCompleto
 
             // Formatear tarifa con símbolo monetario
@@ -79,7 +79,7 @@ class ServicioPostAdapter : ListAdapter<ServicioPost, ServicioPostAdapter.Servic
          */
         override fun areItemsTheSame(oldItem: ServicioPost, newItem: ServicioPost): Boolean {
             return oldItem.nombreUsuarioServicioPost == newItem.nombreUsuarioServicioPost &&
-                    oldItem.apellidoUsuarioServicioPost == newItem.apellidoUsuarioServicioPost &&
+
                     oldItem.descripcionServicioPost == newItem.descripcionServicioPost
         }
 

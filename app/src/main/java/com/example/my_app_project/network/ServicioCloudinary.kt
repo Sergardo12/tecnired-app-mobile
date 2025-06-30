@@ -11,7 +11,7 @@ import retrofit2.Response
 
 interface ServicioCloudinary {
     @Multipart
-    @POST("V1_1/{nombre_nube}/image/upload")
+    @POST("v1_1/{nombre_nube}/image/upload")
     suspend fun subirImagen(
         @Path("nombre_nube") nombreNube: String,
         @Part archivo: MultipartBody.Part,
