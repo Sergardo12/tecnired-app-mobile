@@ -7,7 +7,6 @@ import com.example.my_app_project.data.repository.CategoriaRepositoryImpl
 import com.example.my_app_project.data.repository.CloudinaryRepositoryImpl
 import com.example.my_app_project.data.repository.MejorColaboradorRepositoryImpl
 import com.example.my_app_project.data.repository.ServicioPostRepositoryImpl
-import com.example.my_app_project.data.repository.UserRepositoryImpl
 import com.example.my_app_project.domain.repository.AuthRepository
 import com.example.my_app_project.domain.repository.CategoriaRepository
 import com.example.my_app_project.domain.repository.MejorColaboradorRepository
@@ -17,6 +16,7 @@ import com.example.my_app_project.data.repository.HistorialRepositoryImpl
 import com.example.my_app_project.data.repository.NotificacionesRepositoryImpl
 import com.example.my_app_project.data.repository.ServicioSolicitudRepositoryImpl
 import com.example.my_app_project.domain.repository.CloudinaryRepository
+import com.example.my_app_project.data.repository.UserRepositoryImpl
 import com.example.my_app_project.domain.repository.FavoritosRepository
 import com.example.my_app_project.domain.repository.HistorialRepository
 import com.example.my_app_project.domain.repository.NotificacionesRepository

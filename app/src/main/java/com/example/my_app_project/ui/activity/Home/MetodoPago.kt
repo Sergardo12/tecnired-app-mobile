@@ -12,6 +12,8 @@ import com.example.my_app_project.R
 import com.example.my_app_project.databinding.ActivityMetodoPagoBinding
 import com.example.my_app_project.presentation.perfilUser.PerfilUserViewModel
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
+import com.example.my_app_project.ui.activity.Register.FormInicioSesion
+import com.example.my_app_project.ui.activity.Home.PerfilUsuario
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,11 +41,10 @@ class MetodoPago : AppCompatActivity() {
                 binding.txtNumero.text = it.numeroUserperfil
             }
         }
+
         binding.btnVolver.setOnClickListener {
-            val uid = intent.getStringExtra("uid") ?: return@setOnClickListener
-            val intent = Intent(this, PerfilUsuario::class.java)
-            intent.putExtra("uid", uid)
-            startActivity(intent)
+            startActivity(Intent(this, PerfilUsuario::class.java))
+            finish()
         }
     }
 }

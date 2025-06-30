@@ -86,13 +86,22 @@ class SearchFragment : Fragment() {
         })
 
         binding.btnGasfitero.setOnClickListener {
-            viewModel.buscarPorCategoria("gasfiteria", favoritosIds)
+            viewModel.buscarPorCategoria("Gasfitería", favoritosIds)
         }
         binding.btnElectricista.setOnClickListener {
-            viewModel.buscarPorCategoria("electricidad", favoritosIds)
+            viewModel.buscarPorCategoria("Electricidad", favoritosIds)
         }
         binding.btnCarpintero.setOnClickListener {
-            viewModel.buscarPorCategoria("carpinteria", favoritosIds)
+            viewModel.buscarPorCategoria("Carpinteria", favoritosIds)
+        }
+        binding.btnComputo.setOnClickListener {
+            viewModel.buscarPorCategoria("Cómputo", favoritosIds)
+        }
+        binding.btnMecanico.setOnClickListener {
+            viewModel.buscarPorCategoria("Mecánica", favoritosIds)
+        }
+        binding.btnReposteria.setOnClickListener {
+            viewModel.buscarPorCategoria("Repostería", favoritosIds)
         }
         binding.btnall.setOnClickListener {
             viewModel.obtenerTodosLosServicios(favoritosIds)

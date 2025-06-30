@@ -1,5 +1,9 @@
 package com.example.my_app_project.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class ServicioSolicitud(
     val id: String = "",
     val categoriaId: String = "",
@@ -11,4 +15,5 @@ data class ServicioSolicitud(
     val longitud: Double = 0.0,
     val estado: String = "pendiente",
     val fechaCreacion: Long = System.currentTimeMillis()
-)
+) : Parcelable
+

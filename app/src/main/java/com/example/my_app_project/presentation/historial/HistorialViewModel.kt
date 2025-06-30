@@ -18,41 +18,51 @@ class HistorialViewModel @Inject constructor(
     private val repository: HistorialRepository
 ) : ViewModel() {
 
-    private val _historial = MutableLiveData<List<HistorialItem>>()
-    val historial: LiveData<List<HistorialItem>> = _historial
+    private val _historialCompleto = MutableLiveData<List<HistorialItem>>()
+    private val _historialFiltrado = MutableLiveData<List<HistorialItem>>()
+    val historialFiltrado: LiveData<List<HistorialItem>> = _historialFiltrado
 
-    private var listaOriginal = listOf<HistorialItem>()
+    init {
+        cargarHistorial()
+    }
 
     fun cargarHistorial() {
-        viewModelScope.launch {
-            listaOriginal = repository.obtenerHistorial()
-            _historial.value = listaOriginal
+        repository.obtenerHistorial { lista ->
+            _historialCompleto.postValue(lista)
+            _historialFiltrado.postValue(lista) // Se muestra todo al inicio
         }
     }
 
-    fun crearHistorial() {
-        viewModelScope.launch {
-            repository.generarHistorial()
-            cargarHistorial()
-        }
-    }
-
-    fun filtrarPorCategoria(categoria: String) {
-        val filtrados = listaOriginal.filter {
-            it.categoriaHistorial.contains(categoria, ignoreCase = true)
-        }
-        _historial.value = filtrados
-    }
-
-    fun ordenarPorFecha(descendente: Boolean) {
-        val comparador = compareBy<HistorialItem> {
-            SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault()).parse(it.fechaFinalizadoHistorial)
-        }
-
-        _historial.value = if (descendente) {
-            listaOriginal.sortedWith(comparador.reversed())
+    fun filtrarPorCategoria(texto: String) {
+        val listaOriginal = _historialCompleto.value ?: return
+        if (texto.isBlank()) {
+            _historialFiltrado.postValue(listaOriginal)
         } else {
-            listaOriginal.sortedWith(comparador)
+            val filtrada = listaOriginal.filter {
+                it.categoria.contains(texto, ignoreCase = true)
+            }
+            _historialFiltrado.postValue(filtrada)
         }
+    }
+    fun eliminarServicio(servicioId: String, callback: (Boolean) -> Unit) {
+        repository.eliminarServicio(servicioId) { exito ->
+            if (exito) cargarHistorial()
+            callback(exito)
+        }
+    }
+    fun ordenarHistorialPorFecha(ascendente: Boolean) {
+        _historialFiltrado.value = _historialFiltrado.value?.sortedBy {
+            if (ascendente) it.fechaMillis else -it.fechaMillis
+        }
+    }
+    fun filtrarPorEstado(estado: String) {
+        val listaOriginal = _historialCompleto.value ?: return
+        val filtrada = listaOriginal.filter {
+            it.estado.equals(estado, ignoreCase = true)
+        }
+        _historialFiltrado.postValue(filtrada)
+    }
+    fun mostrarTodos() {
+        _historialFiltrado.postValue(_historialCompleto.value)
     }
 }

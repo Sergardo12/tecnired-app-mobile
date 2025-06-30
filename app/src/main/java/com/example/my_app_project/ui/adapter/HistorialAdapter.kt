@@ -1,49 +1,128 @@
 package com.example.my_app_project.ui.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.my_app_project.R
-import com.example.my_app_project.databinding.ItemHistoryBinding
 import com.example.my_app_project.domain.model.HistorialItem
 
-class HistorialAdapter : RecyclerView.Adapter<HistorialAdapter.ViewHolder>() {
+class HistorialAdapter(
+    private val rolUsuario: String,
+    private val onEliminarClick: (HistorialItem) -> Unit,
+    private val onActualizarEstado: (String, String) -> Unit
+) : RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
 
-    private val lista = mutableListOf<HistorialItem>()
+    private var listaHistorial = listOf<HistorialItem>()
 
-    fun setData(nuevaLista: List<HistorialItem>) {
-        lista.clear()
-        lista.addAll(nuevaLista)
-        notifyDataSetChanged()
+    fun submitList(lista: List<HistorialItem>) {
+        val diffCallback = HistorialDiffCallback(listaHistorial, lista)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        listaHistorial = lista
+        diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val imgPerfil = v.findViewById<ImageView>(R.id.imgPerfil)
-        val txtNombre = v.findViewById<TextView>(R.id.txtNombre)
-        val txtCategoria = v.findViewById<TextView>(R.id.txtCategoria)
-        val txtFecha = v.findViewById<TextView>(R.id.txtFecha)
-        val txtEstado = v.findViewById<TextView>(R.id.txtEstado)
-        val txtPrecio = v.findViewById<TextView>(R.id.txtPrecio)
+    inner class HistorialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val txtNombre: TextView = itemView.findViewById(R.id.txtNombre)
+        private val txtCategoria: TextView = itemView.findViewById(R.id.txtCategoria)
+        private val txtDescripcion: TextView = itemView.findViewById(R.id.txtDescripcion)
+        private val txtFecha: TextView = itemView.findViewById(R.id.txtFecha)
+        private val txtEstado: TextView = itemView.findViewById(R.id.txtEstado)
+        private val btnEliminar: ImageButton = itemView.findViewById(R.id.btnElminar)
+        private val btnDetalles: ImageButton = itemView.findViewById(R.id.btnDetalles)
+        private val btnReiniciar: ImageButton = itemView.findViewById(R.id.btnReiniciar)
 
         fun bind(item: HistorialItem) {
-            txtNombre.text = item.nombreHistorial
-            txtCategoria.text = item.categoriaHistorial
-            txtFecha.text = item.fechaFinalizadoHistorial
-            txtEstado.text = item.estadoHistorial
-            txtPrecio.text = "- S/ ${item.precioHistorial}"
-            Glide.with(imgPerfil.context).load(item.imagenHistorial).circleCrop().into(imgPerfil)
+            txtNombre.text = item.nombreCliente
+            txtCategoria.text = item.categoria
+            txtDescripcion.text = item.descripcion
+            txtFecha.text = item.fechaCreacion
+
+            if (item.estado.equals("aceptado", ignoreCase = true) && item.nombreColaborador.isNotBlank()) {
+                txtEstado.text = "Aceptado por ${item.nombreColaborador}"
+                txtEstado.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_green_dark))
+            } else {
+                txtEstado.text = item.estado.replaceFirstChar { it.uppercaseChar() }
+                txtEstado.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.darker_gray))
+            }
+            btnEliminar.visibility = if (
+                item.estado.equals("aceptado", ignoreCase = true) ||
+                item.estado.equals("completado", ignoreCase = true) ||
+                item.estado.equals("finalizado", ignoreCase = true) ||
+                item.estado.equals("cancelado", ignoreCase = true)
+            ) View.GONE else View.VISIBLE
+            btnEliminar.setOnClickListener {
+                onEliminarClick(item)
+            }
+            btnDetalles.visibility = when {
+                item.estado.equals("aceptado", ignoreCase = true) && rolUsuario == "colaborador" -> View.VISIBLE
+                item.estado.equals("finalizado", ignoreCase = true) && rolUsuario == "cliente" -> View.VISIBLE
+                else -> View.GONE
+            }
+            btnDetalles.setOnClickListener { view ->
+                if (rolUsuario.equals("colaborador", ignoreCase = true) &&
+                    item.estado.equals("aceptado", ignoreCase = true)) {
+
+                    val popupMenu = PopupMenu(view.context, view)
+                    popupMenu.menuInflater.inflate(R.menu.menu_opciones_solicitud, popupMenu.menu)
+
+                    popupMenu.setOnMenuItemClickListener { menuItem ->
+                        when (menuItem.itemId) {
+                            R.id.menu_finalizar -> {
+                                onActualizarEstado(item.id, "finalizado")
+                                true
+                            }
+                            R.id.menu_cancelar -> {
+                                onActualizarEstado(item.id, "cancelado")
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    popupMenu.show()
+                }
+            }
+            btnReiniciar.visibility = if (
+                item.estado.equals("cancelado", ignoreCase = true) &&
+                rolUsuario.equals("cliente", ignoreCase = true)
+            ) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+            btnReiniciar.setOnClickListener {
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("¿Solicitar de nuevo?")
+                    .setMessage("¿Quieres solicitar el mismo servicio?")
+                    .setPositiveButton("Aceptar") { _, _ ->
+                        // Aquí actualizas el estado
+                        onActualizarEstado(item.id, "pendiente")
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+
         }
     }
 
-    override fun onCreateViewHolder(p: ViewGroup, v: Int): ViewHolder {
-        val view = LayoutInflater.from(p.context).inflate(R.layout.item_history, p, false)
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistorialViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_history, parent, false)
+        return HistorialViewHolder(view)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) = h.bind(lista[i])
-    override fun getItemCount(): Int = lista.size
+    override fun onBindViewHolder(holder: HistorialViewHolder, position: Int) {
+        holder.bind(listaHistorial[position])
+    }
+
+    override fun getItemCount(): Int = listaHistorial.size
 }
+
+

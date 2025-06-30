@@ -75,6 +75,29 @@
                 app:strokeColor="@color/black"
                 app:strokeWidth="1dp" />
 
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnComputo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cómputo"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="16dp"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnReposteria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repostería"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="16dp"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp" />
+
+
         </LinearLayout>
     </HorizontalScrollView>
 

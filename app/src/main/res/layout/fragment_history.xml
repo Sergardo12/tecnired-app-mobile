@@ -49,12 +49,18 @@
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnTodos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Todos"
+                app:cornerRadius="16dp" />
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/btnReciente"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Más reciente"
                 app:cornerRadius="16dp" />
-
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/btnAntiguo"
@@ -63,7 +69,38 @@
                 android:text="Más antiguo"
                 app:cornerRadius="16dp"
                 android:layout_marginStart="8dp"/>
-
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnPendiente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pendientes"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnAceptados"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aceptados"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnFinalizados"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Finalizados"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnCancelados"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancelados"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp"/>
         </LinearLayout>
     </HorizontalScrollView>
 
