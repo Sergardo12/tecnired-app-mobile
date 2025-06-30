@@ -2,6 +2,7 @@ package com.example.my_app_project.data.repository
 
 import com.example.my_app_project.domain.model.HistorialItem
 import com.example.my_app_project.domain.repository.HistorialRepository
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -9,63 +10,83 @@ import java.util.Locale
 import javax.inject.Inject
 
 class HistorialRepositoryImpl @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val auth: FirebaseAuth
 ) : HistorialRepository {
 
     override fun obtenerHistorial(callback: (List<HistorialItem>) -> Unit) {
+        val uid = auth.currentUser?.uid ?: return
+
         db.collection("servicios_solicitados")
+            .whereIn("clienteId", listOf(uid))
             .get()
-            .addOnSuccessListener { snapshot ->
-                val historialList = mutableListOf<HistorialItem>()
-                val documentos = snapshot.documents
+            .addOnSuccessListener { snapshotCliente ->
+                val listaCliente = snapshotCliente.documents.toMutableList()
 
-                documentos.forEach { doc ->
-                    val categoriaId = doc.getString("categoriaId") ?: ""
-                    val clienteId = doc.getString("clienteId") ?: ""
-                    val descripcion = doc.getString("descripcion") ?: ""
-                    val direccion = doc.getString("direccion") ?: ""
+                db.collection("servicios_solicitados")
+                    .whereEqualTo("colaboradorId", uid)
+                    .get()
+                    .addOnSuccessListener { snapshotColaborador ->
+                        val listaColaborador = snapshotColaborador.documents
 
-                    val fechaMillis = doc.getLong("fechaCreacion") ?: 0L
-                    val fechaCreacion = Date(fechaMillis).let {
-                        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                        formato.format(it)
-                    }
+                        val documentos = (listaCliente + listaColaborador).distinctBy { it.id }
 
-                    val estado = doc.getString("estado") ?: ""
+                        if (documentos.isEmpty()) {
+                            callback(emptyList())
+                            return@addOnSuccessListener
+                        }
 
-                    val historialItem = HistorialItem(
-                        id = doc.id,
-                        descripcion = descripcion,
-                        direccion = direccion,
-                        fechaCreacion = fechaCreacion,
-                        estado = estado,
-                        fechaMillis = fechaMillis // ➕ lo añadimos aquí
-                    )
+                        val historialList = mutableListOf<HistorialItem>()
 
-                    // Fetch categoría y cliente
-                    obtenerDatosCompletos(categoriaId, clienteId) { categoria, nombreCliente ->
-                        historialList.add(
-                            historialItem.copy(
-                                categoria = categoria,
-                                nombreCliente = nombreCliente
+                        documentos.forEach { doc ->
+                            val categoriaId = doc.getString("categoriaId") ?: ""
+                            val clienteId = doc.getString("clienteId") ?: ""
+                            val colaboradorId = doc.getString("colaboradorId")
+                            val descripcion = doc.getString("descripcion") ?: ""
+                            val direccion = doc.getString("direccion") ?: ""
+
+                            val fechaMillis = doc.getLong("fechaCreacion") ?: 0L
+                            val fechaCreacion = Date(fechaMillis).let {
+                                val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                                formato.format(it)
+                            }
+
+                            val estado = doc.getString("estado") ?: ""
+
+                            val historialItem = HistorialItem(
+                                id = doc.id,
+                                descripcion = descripcion,
+                                direccion = direccion,
+                                fechaCreacion = fechaCreacion,
+                                estado = estado,
+                                fechaMillis = fechaMillis
                             )
-                        )
 
-                        // Cuando terminamos de cargar todos los documentos
-                        if (historialList.size == documentos.size) {
-                            // ➕ Ordenar antes de devolver
-                            val listaOrdenada = historialList.sortedByDescending { it.fechaMillis }
-                            callback(listaOrdenada)
+                            obtenerDatosCompletos(categoriaId, clienteId, colaboradorId) { categoria, nombreCliente, nombreColaborador ->
+                                historialList.add(
+                                    historialItem.copy(
+                                        categoria = categoria,
+                                        nombreCliente = nombreCliente,
+                                        nombreColaborador = nombreColaborador
+                                    )
+                                )
+
+                                if (historialList.size == documentos.size) {
+                                    val listaOrdenada = historialList.sortedByDescending { it.fechaMillis }
+                                    callback(listaOrdenada)
+                                }
+                            }
                         }
                     }
-                }
-
-                if (documentos.isEmpty()) callback(emptyList())
+                    .addOnFailureListener {
+                        callback(emptyList())
+                    }
             }
             .addOnFailureListener {
                 callback(emptyList())
             }
     }
+
     override fun eliminarServicio(servicioId: String, callback: (Boolean) -> Unit) {
         db.collection("servicios_solicitados")
             .document(servicioId)
@@ -77,12 +98,12 @@ class HistorialRepositoryImpl @Inject constructor(
     private fun obtenerDatosCompletos(
         categoriaId: String,
         clienteId: String,
-        callback: (String, String) -> Unit
+        colaboradorId: String?,
+        callback: (String, String, String) -> Unit
     ) {
         var categoria = "Categoría Desconocida"
-        var nombreCliente = "Usuario Desconocido"
-
-        val db = FirebaseFirestore.getInstance()
+        var nombreCliente = "Cliente Desconocido"
+        var nombreColaborador = ""
 
         db.collection("categorias").document(categoriaId).get()
             .addOnSuccessListener { catDoc ->
@@ -90,16 +111,29 @@ class HistorialRepositoryImpl @Inject constructor(
 
                 db.collection("usuarios").document(clienteId)
                     .collection("userData").document("perfil").get()
-                    .addOnSuccessListener { perfilDoc ->
-                        nombreCliente = perfilDoc.getString("nombre") ?: nombreCliente
-                        callback(categoria, nombreCliente)
+                    .addOnSuccessListener { perfilCliente ->
+                        nombreCliente = perfilCliente.getString("nombre") ?: nombreCliente
+
+                        if (colaboradorId != null && colaboradorId.isNotEmpty()) {
+                            db.collection("usuarios").document(colaboradorId)
+                                .collection("userData").document("perfil").get()
+                                .addOnSuccessListener { perfilColaborador ->
+                                    nombreColaborador = perfilColaborador.getString("nombre") ?: ""
+                                    callback(categoria, nombreCliente, nombreColaborador)
+                                }
+                                .addOnFailureListener {
+                                    callback(categoria, nombreCliente, nombreColaborador)
+                                }
+                        } else {
+                            callback(categoria, nombreCliente, nombreColaborador)
+                        }
                     }
                     .addOnFailureListener {
-                        callback(categoria, nombreCliente)
+                        callback(categoria, nombreCliente, nombreColaborador)
                     }
             }
             .addOnFailureListener {
-                callback(categoria, nombreCliente)
+                callback(categoria, nombreCliente, nombreColaborador)
             }
     }
 }

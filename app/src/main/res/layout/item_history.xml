@@ -75,14 +75,25 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center">
-
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/btnDetalles"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_detalles"
+                android:layout_marginBottom="5dp"/>
+            <ImageButton
+                android:id="@+id/btnReiniciar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_reiniciar"
+                android:layout_marginBottom="5dp"/>
             <ImageButton
                 android:id="@+id/btnElminar"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/ic_eliminar">
-            </ImageButton>
+                android:background="@drawable/ic_eliminar" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

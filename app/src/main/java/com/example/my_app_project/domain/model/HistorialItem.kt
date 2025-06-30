@@ -8,5 +8,6 @@ data class HistorialItem(
     val direccion: String = "",
     val fechaCreacion: String = "",
     val fechaMillis: Long = 0L,
-    val estado: String = ""
+    val estado: String = "",
+    val nombreColaborador: String = "",
 )

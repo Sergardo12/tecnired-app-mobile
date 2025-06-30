@@ -20,6 +20,9 @@
         android:id="@+id/historyFragment"
         android:name="com.example.my_app_project.ui.fragment.HistoryFragment"
         android:label="Historial" />
+        <action
+            android:id="@+id/action_historyFragment_to_detalleSolicitudColaboradorFragment"
+            app:destination="@id/detalleSolicitudColaborador" />
     <fragment
         android:id="@+id/solicitarServicioFragment"
         android:name="com.example.my_app_project.ui.fragment.SolicitarServicioFragment"

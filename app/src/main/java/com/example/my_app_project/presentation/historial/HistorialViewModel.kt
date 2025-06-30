@@ -26,7 +26,7 @@ class HistorialViewModel @Inject constructor(
         cargarHistorial()
     }
 
-    private fun cargarHistorial() {
+    fun cargarHistorial() {
         repository.obtenerHistorial { lista ->
             _historialCompleto.postValue(lista)
             _historialFiltrado.postValue(lista) // Se muestra todo al inicio
