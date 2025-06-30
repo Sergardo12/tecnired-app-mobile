@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.my_app_project.domain.model.ServicioPost
+import com.example.my_app_project.domain.repository.CloudinaryRepository
 import com.example.my_app_project.domain.repository.ServicioPostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,11 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ServicioPostViewModel @Inject constructor(
-    private val servicioPostRepository: ServicioPostRepository
+    private val servicioPostRepository: ServicioPostRepository,
+    private val cloudinaryRepository: CloudinaryRepository,
 ):  ViewModel (){
 
     private val _serviciosPost = MutableStateFlow<List<ServicioPost>>(emptyList())
@@ -41,5 +44,23 @@ class ServicioPostViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+    fun subirImagenYCrearPost(archivoBytes: ByteArray, nombreArchivo: String, descripcion: String, tarifa: String) {
+        viewModelScope.launch {
+            try {
+                val url = cloudinaryRepository.subirImagenACloudinary(archivoBytes, nombreArchivo)
+                servicioPostRepository.verificarYCrearServicioPost(
+                    urlImagen = url,
+                    descripcion = descripcion,
+                    tarifa = tarifa
+                )
+                // Puedes emitir algún estado de éxito aquí si usas StateFlow o LiveData
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Aquí puedes manejar el error si usas LiveData o StateFlow
+            }
+        }
+    }
+
+
 
 }

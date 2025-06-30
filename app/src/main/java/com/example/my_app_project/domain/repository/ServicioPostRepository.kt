@@ -5,4 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface ServicioPostRepository {
     fun obtenerServiciosPost(): Flow<List<ServicioPost>>
+    suspend fun verificarYCrearServicioPost(
+        urlImagen: String,
+        descripcion: String,
+        tarifa: String
+    )
+
 }

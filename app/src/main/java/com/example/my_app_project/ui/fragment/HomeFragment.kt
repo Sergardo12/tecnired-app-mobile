@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.my_app_project.R
+import com.example.my_app_project.databinding.FragmentHomeBinding
 import com.example.my_app_project.domain.model.Categoria
 import com.example.my_app_project.presentation.categorias.CategoriaViewModel
 import com.example.my_app_project.ui.adapter.CategoriasAdapter
@@ -22,6 +23,9 @@ import kotlin.math.log
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +37,8 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +53,16 @@ class HomeFragment : Fragment() {
             .replace(R.id.contenedor_mejores_colaboradores_fragment, MejorColaboradorFragment())
             .commit()
 
+        // Abrir el bootmdialog
+        binding.cardCrearPublicacion.setOnClickListener {
+            val bottomSheet = CrearPostBottomSheet()
+            bottomSheet.show(parentFragmentManager, CrearPostBottomSheet::class.java.simpleName)
+        }
 
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 
