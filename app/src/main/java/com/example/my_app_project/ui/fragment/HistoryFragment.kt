@@ -57,6 +57,28 @@ class HistoryFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        binding.btnReciente.setOnClickListener {
+            viewModel.ordenarHistorialPorFecha(ascendente = false)
+        }
+
+        binding.btnAntiguo.setOnClickListener {
+            viewModel.ordenarHistorialPorFecha(ascendente = true)
+        }
+        binding.btnPendiente.setOnClickListener {
+            viewModel.filtrarPorEstado("pendiente")
+        }
+        binding.btnAceptados.setOnClickListener {
+            viewModel.filtrarPorEstado("aceptado")
+        }
+        binding.btnFinalizados.setOnClickListener {
+            viewModel.filtrarPorEstado("finalizado")
+        }
+        binding.btnCancelados.setOnClickListener {
+            viewModel.filtrarPorEstado("cancelado")
+        }
+        binding.btnTodos.setOnClickListener {
+            viewModel.mostrarTodos()
+        }
     }
 
     private fun configurarAdapter(rolUsuario: String) {

@@ -50,4 +50,19 @@ class HistorialViewModel @Inject constructor(
             callback(exito)
         }
     }
+    fun ordenarHistorialPorFecha(ascendente: Boolean) {
+        _historialFiltrado.value = _historialFiltrado.value?.sortedBy {
+            if (ascendente) it.fechaMillis else -it.fechaMillis
+        }
+    }
+    fun filtrarPorEstado(estado: String) {
+        val listaOriginal = _historialCompleto.value ?: return
+        val filtrada = listaOriginal.filter {
+            it.estado.equals(estado, ignoreCase = true)
+        }
+        _historialFiltrado.postValue(filtrada)
+    }
+    fun mostrarTodos() {
+        _historialFiltrado.postValue(_historialCompleto.value)
+    }
 }
