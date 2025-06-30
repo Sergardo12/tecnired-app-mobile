@@ -92,7 +92,7 @@ class UserRepositoryImpl @Inject constructor(
             .collection("userData")
             .document("perfilcolab")
 
-        val publicoRef = firestore.collection("sdfwer").document(uid)
+        val publicoRef = firestore.collection("perfilesPublicos").document(uid)
 
         val userData = mapOf(
             "categoriaUserperfil" to perfil.categoriaUserperfil,
