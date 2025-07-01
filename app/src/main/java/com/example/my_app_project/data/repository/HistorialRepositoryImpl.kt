@@ -61,7 +61,8 @@ class HistorialRepositoryImpl @Inject constructor(
                                 fechaCreacion = fechaCreacion,
                                 estado = estado,
                                 fechaMillis = fechaMillis,
-                                colaboradorId = colaboradorId
+                                colaboradorId = colaboradorId,
+                                clienteId = clienteId,
                             )
 
                             obtenerDatosCompletos(categoriaId, clienteId, colaboradorId) { categoria, nombreCliente, nombreColaborador ->

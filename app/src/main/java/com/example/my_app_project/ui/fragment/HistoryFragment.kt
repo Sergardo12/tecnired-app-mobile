@@ -17,6 +17,7 @@ import com.example.my_app_project.databinding.FragmentHistoryBinding
 import com.example.my_app_project.ui.adapter.HistorialAdapter
 import com.example.my_app_project.R
 import com.example.my_app_project.presentation.historial.HistorialViewModel
+import com.example.my_app_project.ui.activity.Chat.Chat
 import com.example.my_app_project.ui.activity.Servicios.ServicioActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -117,6 +118,13 @@ class HistoryFragment : Fragment() {
                         Toast.makeText(context, "Colaborador calificado", Toast.LENGTH_SHORT).show()
                     }
                 }
+            },
+            onChatClick = { historialItem ->
+                val intent = Intent(requireContext(), Chat::class.java)
+                intent.putExtra("servicioId", historialItem.id)
+                intent.putExtra("clienteId", historialItem.clienteId)
+                intent.putExtra("colaboradorId", historialItem.colaboradorId)
+                startActivity(intent)
             }
         )
         binding.recyclerHistorial.layoutManager = LinearLayoutManager(requireContext())
