@@ -1,5 +1,6 @@
 package com.example.my_app_project.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,13 +14,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.my_app_project.databinding.FragmentServiciosPostBinding
+import com.example.my_app_project.domain.model.ServicioPost
 import com.example.my_app_project.presentation.serviciosPost.ServicioPostViewModel
 import com.example.my_app_project.ui.adapter.ServicioPostAdapter
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ServiciosPostFragment : Fragment() {
+    @Inject lateinit var firebaseAuth: FirebaseAuth
 
     private var _binding: FragmentServiciosPostBinding? = null
     private val binding get() = _binding!!
@@ -39,28 +44,42 @@ class ServiciosPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        inicializarRecyclerView()
         recuperarCategoriaSeleccionada()
+        inicializarRecyclerView()
         observarErrores()
         observarListaServicios()
     }
 
-    // Inicializa el RecyclerView y su adaptador
     private fun inicializarRecyclerView() {
-        adapter = ServicioPostAdapter()
-        binding.recyclerServiciosPost.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = this@ServiciosPostFragment.adapter
-        }
+        adapter = ServicioPostAdapter(
+            auth = firebaseAuth,
+            viewModel = viewModel,
+            onLikeClicked = { postId, colaboradorUid ->
+                viewModel.toggleLike(postId, colaboradorUid)
+            },
+            onCommentClick = { postId, colaboradorUid ->
+                val bottomSheet = ComentariosBottomSheetFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("postId", postId)
+                        putString("colaboradorUid", colaboradorUid)
+                    }
+                }
+                bottomSheet.show(parentFragmentManager, "ComentariosBottomSheet")
+            },
+            onShareClick = { servicioPost ->
+                viewModel.incrementarContadorShares(servicioPost.id, servicioPost.uidColaborador)
+                compartirPost(servicioPost)
+            }
+        )
+
+        binding.recyclerServiciosPost.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerServiciosPost.adapter = adapter
     }
 
-    // Recupera el argumento "categoria_seleccionada" que se pasó desde la actividad
     private fun recuperarCategoriaSeleccionada() {
         categoriaSeleccionada = arguments?.getString("categoria_seleccionada")
     }
 
-    // Observa los errores emitidos por el ViewModel
     private fun observarErrores() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -73,7 +92,6 @@ class ServiciosPostFragment : Fragment() {
         }
     }
 
-    // Observa la lista de servicios y la filtra según la categoría seleccionada
     private fun observarListaServicios() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -82,13 +100,33 @@ class ServiciosPostFragment : Fragment() {
                         val listaFiltrada = listaCompleta.filter {
                             it.categoriaServicioPost.equals(categoria, ignoreCase = true)
                         }
-                        Log.d("ServiciosPostFragment", "Filtrado por '$categoria': $listaFiltrada")
                         adapter.submitList(listaFiltrada)
                     }
                 }
             }
         }
     }
+    private fun compartirPost(servicioPost: ServicioPost) {
+        val textoCompartir = """
+        Mira este servicio en nuestra app:
+        🔧 ${servicioPost.categoriaServicioPost}
+        👤 ${servicioPost.nombreUsuarioServicioPost}
+        💬 ${servicioPost.descripcionServicioPost}
+        💰 S/ ${servicioPost.tarifaServicioPost}.00
+        
+        Descarga la app para más info.
+    """.trimIndent()
+
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, textoCompartir)
+            type = "text/plain"
+        }
+
+        val chooser = Intent.createChooser(intent, "Compartir servicio con...")
+        startActivity(chooser)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -103,14 +103,14 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.4.0")
 
 
-    //Para las peticiones http
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    // Para subir imagenes
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
 
     implementation ("com.google.firebase:firebase-messaging:23.4.")
+
+    //Pra subir imagenes
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+
+
 
 
 

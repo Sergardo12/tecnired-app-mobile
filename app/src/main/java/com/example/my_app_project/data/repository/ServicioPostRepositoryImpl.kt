@@ -9,37 +9,64 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ServicioPostRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): ServicioPostRepository {
+
     override fun obtenerServiciosPost(): Flow<List<ServicioPost>> = callbackFlow {
-        val collection = firestore.collection("serviciosPost")
+        val collection = firestore.collectionGroup("publicaciones")
         val listener = collection.addSnapshotListener { snapshot, error ->
             if (error != null){
                 close(error)
                 return@addSnapshotListener
             }
-            val listaserviciosPost = snapshot?.documents?.mapNotNull { doc ->
-                val servicioPost = doc.toObject(ServicioPost::class.java)
-                servicioPost?.copy(id = doc.id)
-            }?: emptyList()
-            trySend(listaserviciosPost)
+
+            val documentos = snapshot?.documents ?: emptyList()
+
+            if (documentos.isEmpty()) {
+                trySend(emptyList())
+                return@addSnapshotListener
+            }
+
+            launch {
+                val listaFinal = mutableListOf<ServicioPost>()
+
+                for (doc in documentos) {
+                    val servicioPost = doc.toObject(ServicioPost::class.java)?.copy(id = doc.id)
+                    if (servicioPost != null && servicioPost.id.isNotBlank()) {
+                        val colaboradorUid = doc.reference.path.split("/")[1]
+
+                        val comentariosSnapshot = try {
+                            firestore.collection("perfilesPublicos")
+                                .document(colaboradorUid)
+                                .collection("publicaciones")
+                                .document(servicioPost.id)
+                                .collection("comentarios")
+                                .get()
+                                .await()
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        val commentCount = comentariosSnapshot?.size() ?: 0
+                        val shareCount = doc.getLong("shareCount")?.toInt() ?: 0
+
+                        val actualizado = servicioPost.copy(
+                            commentCount = commentCount,
+                            shareCount = shareCount
+                        )
+                        listaFinal.add(actualizado)
+                    }
+                }
+
+                trySend(listaFinal.sortedByDescending { it.id })
+            }
         }
-        awaitClose{listener.remove()}
-    }
-
-    override suspend fun verificarYCrearServicioPost(
-        urlImagen: String,
-        descripcion: String,
-        tarifa: String
-    ) {
-        val post = crearPostDesdePerfil(urlImagen, descripcion, tarifa)
-        crearServicioPost(post)
-        Log.d("ServicioPostRepositoryImpl", "Post creado: $post")
-
+        awaitClose { listener.remove() }
     }
 
     private suspend fun crearPostDesdePerfil(
@@ -48,16 +75,14 @@ class ServicioPostRepositoryImpl @Inject constructor(
         tarifa: String
     ): ServicioPost {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-
             ?: throw Exception("Usuario no autenticado")
 
         val docSnapshot = firestore.collection("perfilesPublicos").document(uid).get().await()
 
-        if (!docSnapshot.exists()) {
-            throw Exception("Perfil no encontrado")
-        }
+        if (!docSnapshot.exists()) throw Exception("Perfil público no encontrado")
 
         val nombre = docSnapshot.getString("nombreUserperfil") ?: ""
+
         val categoria = docSnapshot.getString("categoriaUserperfil") ?: ""
 
         return ServicioPost(
@@ -69,11 +94,61 @@ class ServicioPostRepositoryImpl @Inject constructor(
             tarifaServicioPost = tarifa
         )
     }
-    fun crearServicioPost(servicioPost: ServicioPost) {
-        firestore.collection("serviciosPost")
+
+    override suspend fun crearServicioPost(
+        urlImagen: String,
+        descripcion: String,
+        tarifa: String
+    ) {
+        Log.d("ServicioPostRepository", "⏳ Empezando creación de post...")
+        val servicioPost = crearPostDesdePerfil(urlImagen, descripcion, tarifa)
+        Log.d("ServicioPostRepository", "✅ Datos creados desde perfil: $servicioPost")
+
+        firestore.collection("perfilesPublicos")
+            .document(servicioPost.uidColaborador)
+            .collection("publicaciones")
             .add(servicioPost)
-            .addOnFailureListener { throw it }
+            .addOnSuccessListener {
+                Log.d("ServicioPostRepository", "✅ Post guardado con éxito: ${it.id}")
+            }
+            .addOnFailureListener {
+                Log.e("ServicioPostRepository", "❌ Error al crear post: ${it.message}")
+                throw it
+            }
+            .await()
     }
+    override suspend fun toggleLike(postId: String, colaboradorUid: String, usuarioUid: String) {
+        val postRef = firestore.collection("perfilesPublicos")
+            .document(colaboradorUid)
+            .collection("publicaciones")
+            .document(postId)
+
+        val snapshot = postRef.get().await()
+        val likes = snapshot.get("likes") as? List<String> ?: emptyList()
+
+        if (usuarioUid in likes) {
+            postRef.update("likes", com.google.firebase.firestore.FieldValue.arrayRemove(usuarioUid)).await()
+        } else {
+            postRef.update("likes", com.google.firebase.firestore.FieldValue.arrayUnion(usuarioUid)).await()
+        }
+    }
+
+    override suspend fun incrementarContadorShares(postId: String, colaboradorUid: String) {
+        val postRef = firestore.collection("perfilesPublicos")
+            .document(colaboradorUid)
+            .collection("publicaciones")
+            .document(postId)
+
+        postRef.update("shareCount", com.google.firebase.firestore.FieldValue.increment(1)).await()
+    }
+
+
+
+
+
+
+
+
 
 
 

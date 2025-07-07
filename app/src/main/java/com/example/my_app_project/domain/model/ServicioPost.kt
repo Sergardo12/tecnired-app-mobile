@@ -7,6 +7,13 @@ data class ServicioPost (
     val nombreUsuarioServicioPost: String = "",
     val descripcionServicioPost: String = "",
     val categoriaServicioPost: String = "",          // 🔁 Se puede jalar desde el perfil
-    val tarifaServicioPost: String = ""
+    val tarifaServicioPost: String = "",
+    val likes: List<String> = emptyList(), //like
+    val commentCount: Int = 0,
+    val shareCount: Int = 0
+
+
+
+
 
 )

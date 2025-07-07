@@ -4,7 +4,8 @@ import com.example.my_app_project.data.repository.ServicioRepositoryImpl
 import com.example.my_app_project.domain.repository.ServicioRepository
 import com.example.my_app_project.data.repository.AuthRepositoryImpl
 import com.example.my_app_project.data.repository.CategoriaRepositoryImpl
-import com.example.my_app_project.data.repository.CloudinaryRepositoryImpl
+import com.example.my_app_project.data.repository.CloudStorageRepositoryImpl
+import com.example.my_app_project.data.repository.ComentarioPostRepositoryImpl
 import com.example.my_app_project.data.repository.MejorColaboradorRepositoryImpl
 import com.example.my_app_project.data.repository.ServicioPostRepositoryImpl
 import com.example.my_app_project.domain.repository.AuthRepository
@@ -15,24 +16,22 @@ import com.example.my_app_project.data.repository.FavoritosRepositoryImpl
 import com.example.my_app_project.data.repository.HistorialRepositoryImpl
 import com.example.my_app_project.data.repository.NotificacionesRepositoryImpl
 import com.example.my_app_project.data.repository.ServicioSolicitudRepositoryImpl
-import com.example.my_app_project.domain.repository.CloudinaryRepository
 import com.example.my_app_project.data.repository.UserRepositoryImpl
+import com.example.my_app_project.domain.repository.CloudStorageRepository
+import com.example.my_app_project.domain.repository.ComentarioPostRepository
 import com.example.my_app_project.domain.repository.FavoritosRepository
 import com.example.my_app_project.domain.repository.HistorialRepository
 import com.example.my_app_project.domain.repository.NotificacionesRepository
 import com.example.my_app_project.domain.repository.ServicioSolicitudRepository
 import com.example.my_app_project.domain.repository.UserRepository
-import com.example.my_app_project.network.ServicioCloudinary
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 // Este módulo enlaza la interfaz con su implementación
@@ -81,9 +80,16 @@ abstract class RepositoryModule {
     ): ServicioSolicitudRepository
 
     @Binds
-    abstract fun bindRepositoryCloudinary(
-        impl: CloudinaryRepositoryImpl
-    ): CloudinaryRepository
+    abstract fun bindCloudStorageRepository(
+        impl: CloudStorageRepositoryImpl
+    ): CloudStorageRepository
+
+    @Binds
+    abstract fun binComentarioRepository(
+        impl: ComentarioPostRepositoryImpl
+    ): ComentarioPostRepository
+
+
 
 }
 
@@ -109,16 +115,9 @@ object FirebaseModule {
     fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
         return AuthRepositoryImpl(firebaseAuth)
     }
-
     @Provides
     @Singleton
-    fun provideRetrofitCloudinary(): ServicioCloudinary{
-        return Retrofit.Builder()
-            .baseUrl("https://api.cloudinary.com/")
-            .client(OkHttpClient.Builder().build())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ServicioCloudinary::class.java)
-    }
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
 }
 

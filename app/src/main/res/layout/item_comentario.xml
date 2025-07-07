@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Nombre del usuario -->
+    <TextView
+        android:id="@+id/tvNombreUsuarioComentario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Usuario"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="13sp" />
+
+    <!-- Contenido del comentario -->
+    <TextView
+        android:id="@+id/tvContenidoComentario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comentario del usuario aquí..."
+        android:textSize="13sp"
+        android:textColor="#444444"
+        android:layout_marginTop="2dp" />
+</LinearLayout>
