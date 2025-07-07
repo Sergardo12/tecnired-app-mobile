@@ -85,6 +85,7 @@ class HistoryFragment : Fragment() {
     private fun configurarAdapter(rolUsuario: String) {
         adapter = HistorialAdapter(
             rolUsuario = rolUsuario,
+            uidUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid ?: "",
             onEliminarClick = { historialItem ->
                 AlertDialog.Builder(requireContext())
                     .setTitle("|ADVERTENCIA¡")
@@ -112,9 +113,9 @@ class HistoryFragment : Fragment() {
                         Toast.makeText(requireContext(), "Error al actualizar", Toast.LENGTH_SHORT).show()
                     }
             },
-            onCalificar = { colaboradorId, puntaje ->
-                viewModel.calificarColaborador(colaboradorId, puntaje) { exito ->
-                    if (exito) {
+            onCalificar = { colaboradorId, puntaje, servicioId ->
+                viewModel.calificarColaborador(colaboradorId, puntaje, servicioId) { exito ->
+                if (exito) {
                         Toast.makeText(context, "Colaborador calificado", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -154,4 +155,3 @@ class HistoryFragment : Fragment() {
         _binding = null
     }
 }
-

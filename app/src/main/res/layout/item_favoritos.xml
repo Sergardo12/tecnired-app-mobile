@@ -82,10 +82,10 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btnOpciones"
+            android:id="@+id/btnGou"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_more_vert"
+            android:src="@drawable/ic_go"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:contentDescription="Más opciones" />

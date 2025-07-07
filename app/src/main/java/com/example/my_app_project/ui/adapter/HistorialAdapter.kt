@@ -20,8 +20,9 @@ class HistorialAdapter(
     private val rolUsuario: String,
     private val onEliminarClick: (HistorialItem) -> Unit,
     private val onActualizarEstado: (String, String) -> Unit,
-    private val onCalificar: (String, Int) -> Unit,
-    private val onChatClick: (HistorialItem) -> Unit
+    private val onCalificar: (colaboradorId: String, puntaje: Int, servicioId: String) -> Unit,
+    private val onChatClick: (HistorialItem) -> Unit,
+    private val uidUsuarioActual: String,
 ) : RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
 
     private var listaHistorial = listOf<HistorialItem>()
@@ -80,9 +81,11 @@ class HistorialAdapter(
                 onChatClick(item)
             }
             btnCalificar.visibility = when {
-                item.estado.equals("finalizado", ignoreCase = true) && rolUsuario == "cliente" -> View.VISIBLE
+                item.estado.equals("finalizado", ignoreCase = true)
+                        && item.clienteId == uidUsuarioActual -> View.VISIBLE
                 else -> View.GONE
             }
+
             btnCalificar.setOnClickListener {
                 val context = itemView.context
                 val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_calificacion, null)
@@ -94,7 +97,7 @@ class HistorialAdapter(
                         val puntaje = ratingBar.rating.toInt()
                         val colaboradorId = item.colaboradorId
                         if (!colaboradorId.isNullOrBlank()) {
-                            onCalificar(colaboradorId, puntaje)
+                            onCalificar(colaboradorId, puntaje , item.id)
                         } else {
                             Toast.makeText(context, "Colaborador no encontrado.", Toast.LENGTH_SHORT).show()
                         }

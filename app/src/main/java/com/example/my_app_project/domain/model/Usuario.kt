@@ -14,6 +14,7 @@ data class UsuarioPerfil(
     val especialidadUserperfil: String = "",
     val imagenUserperfil: String = "",
     val nombreUserperfil: String = "",
+    val apellidoUserperfil: String = "",
     val numeroUserperfil: String = "",
     val descripcionUserperfil: String = "",
     val puntajeUserperfil: Double = 0.0,

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.my_app_project.domain.model.HistorialItem
 import com.example.my_app_project.domain.repository.HistorialRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -66,20 +67,54 @@ class HistorialViewModel @Inject constructor(
     fun mostrarTodos() {
         _historialFiltrado.postValue(_historialCompleto.value)
     }
-    fun calificarColaborador(colaboradorId: String?, puntaje: Int, callback: (Boolean) -> Unit) {
+    fun calificarColaborador(colaboradorId: String?, puntaje: Int, servicioId: String, callback: (Boolean) -> Unit) {
         if (colaboradorId.isNullOrBlank()) {
             callback(false)
             return
         }
 
-        val docRef = FirebaseFirestore.getInstance()
-            .collection("usuarios")
-            .document(colaboradorId)
-            .collection("userData")
-            .document("perfilcolab")
+        val db = FirebaseFirestore.getInstance()
+        val uidCliente = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        docRef.update("puntajeUserperfil", puntaje)
-            .addOnSuccessListener { callback(true) }
-            .addOnFailureListener { callback(false) }
+        val calificacionRef = db.collection("usuarios")
+            .document(colaboradorId)
+            .collection("calificaciones")
+            .document(servicioId)
+
+        calificacionRef.set(
+            mapOf(
+                "puntaje" to puntaje,
+                "clienteId" to uidCliente,
+                "servicioId" to servicioId,
+                "timestamp" to System.currentTimeMillis()
+            )
+        ).addOnSuccessListener {
+            // Luego recalcula el promedio
+            db.collection("usuarios")
+                .document(colaboradorId)
+                .collection("calificaciones")
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val puntajes = snapshot.documents.mapNotNull { it.getLong("puntaje")?.toInt() }
+                    val promedio = if (puntajes.isNotEmpty()) puntajes.average() else 0.0
+
+                    db.collection("usuarios")
+                        .document(colaboradorId)
+                        .collection("userData")
+                        .document("perfilcolab")
+                        .update("puntajeUserperfil", promedio)
+                        .addOnSuccessListener {
+                            db.collection("perfilesPublicos")
+                                .document(colaboradorId)
+                                .update("puntajeUserperfil", promedio)
+                                .addOnSuccessListener { callback(true) }
+                                .addOnFailureListener { callback(false) }
+                        }
+                        .addOnFailureListener { callback(false) }
+
+                }
+                .addOnFailureListener { callback(false) }
+        }.addOnFailureListener { callback(false) }
     }
+
 }
