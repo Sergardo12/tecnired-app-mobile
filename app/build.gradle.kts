@@ -103,6 +103,8 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.4.0")
 
     implementation ("com.google.firebase:firebase-messaging:23.4.")
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
+    implementation ("io.coil-kt:coil:2.4.0")
 
 
 }

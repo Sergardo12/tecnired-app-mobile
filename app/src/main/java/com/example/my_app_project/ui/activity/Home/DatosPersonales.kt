@@ -1,9 +1,11 @@
 package com.example.my_app_project.ui.activity.Home
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -21,6 +23,10 @@ class DatosPersonales : AppCompatActivity() {
 
     private val viewModel: UsuarioViewModel by viewModels()
 
+    private val REQUEST_IMAGE_PICK = 1001
+    private var imageUri: Uri? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -29,12 +35,20 @@ class DatosPersonales : AppCompatActivity() {
         val esFlujoInicial = intent.getBooleanExtra("esFlujoInicial", false)
 
 
+
+
         val editNombre = findViewById<EditText>(R.id.nombre)
         val editApellido = findViewById<EditText>(R.id.apellido)
         val editTelefono = findViewById<EditText>(R.id.telefono)
         val btnGuardar = findViewById<Button>(R.id.btn_guardar)
         val prueba1 = ""
 
+        val imageButton = findViewById<ImageButton>(R.id.logo)
+        imageButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, REQUEST_IMAGE_PICK)
+        }
 
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
@@ -74,15 +88,27 @@ class DatosPersonales : AppCompatActivity() {
                 rol = rolActual
             )
 
-            viewModel.guardarUsuario(nuevoUsuario)
-            Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show()
-
-            if (esFlujoInicial) {
-                startActivity(Intent(this, HomeActivity::class.java))
-                finish()
+            if (imageUri != null) {
+                viewModel.guardarUsuarioConFoto(imageUri!!, nuevoUsuario) { exito ->
+                    if (exito) {
+                        Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show()
+                        if (esFlujoInicial) {
+                            startActivity(Intent(this, HomeActivity::class.java))
+                        }
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Error al guardar datos", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
+                viewModel.guardarUsuario(nuevoUsuario)
+                Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show()
+                if (esFlujoInicial) {
+                    startActivity(Intent(this, HomeActivity::class.java))
+                }
                 finish()
             }
+
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -91,4 +117,14 @@ class DatosPersonales : AppCompatActivity() {
             insets
         }
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
+            imageUri = data?.data
+            findViewById<ImageButton>(R.id.logo).setImageURI(imageUri)
+        }
+    }
+
+
+
 }

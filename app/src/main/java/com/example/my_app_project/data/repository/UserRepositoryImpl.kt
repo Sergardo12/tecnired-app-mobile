@@ -1,10 +1,13 @@
 package com.example.my_app_project.data.repository
 
+import android.net.Uri
 import com.example.my_app_project.domain.model.Usuario
 import com.example.my_app_project.domain.model.UsuarioPerfil
 import com.example.my_app_project.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -77,6 +80,7 @@ class UserRepositoryImpl @Inject constructor(
                 nombre = snapshot.getString("nombre") ?: "",
                 apellido = snapshot.getString("apellido") ?: "",
                 telefono = snapshot.getString("telefono") ?: "",
+                imagenUserperfil = snapshot.getString("imagenUserperfil") ?: "",
                 rol = snapshot.getString("rol") ?: ""
             )
         } else null
@@ -196,6 +200,50 @@ class UserRepositoryImpl @Inject constructor(
             )
         } else null
     }
+
+    override suspend fun subirFotoPerfil(uid: String, uri: Uri): String? {
+        return try {
+            val storageRef = FirebaseStorage.getInstance().reference.child("fotos_perfil/$uid.jpg")
+            storageRef.putFile(uri).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override suspend fun guardarUsuarioConFoto(usuario: Usuario, urlFoto: String) {
+        val uid = auth.currentUser?.uid ?: return
+
+        val perfilRef = firestore.collection("usuarios")
+            .document(uid)
+            .collection("userData")
+            .document("perfil")
+
+        val publicoRef = firestore.collection("perfilesPublicos").document(uid)
+
+        val data = mutableMapOf<String, Any>(
+            "nombre" to usuario.nombre,
+            "apellido" to usuario.apellido,
+            "telefono" to usuario.telefono,
+            "imagenUserperfil" to urlFoto
+        )
+
+        if (usuario.rol.isNotBlank()) {
+            data["rol"] = usuario.rol
+        }
+
+        perfilRef.set(data).await()
+
+        publicoRef.set(
+            mapOf(
+                "nombreUserperfil" to usuario.nombre,
+                "numeroUserperfil" to usuario.telefono,
+                "imagenUserperfil" to urlFoto
+            ),
+            SetOptions.merge()
+        )
+    }
+
 
 
 }

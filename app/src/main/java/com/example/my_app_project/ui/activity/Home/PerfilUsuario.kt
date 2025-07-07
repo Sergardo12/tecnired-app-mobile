@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import coil.load
 import com.example.my_app_project.R
 import com.example.my_app_project.databinding.ActivityPerfilUsuarioBinding
 import com.example.my_app_project.presentation.viewmodel.UsuarioViewModel
@@ -45,6 +46,13 @@ class PerfilUsuario : AppCompatActivity() {
                     binding.txtNombre.text = it.nombreUserperfil
                     binding.txtTelefono.text = it.numeroUserperfil
                     binding.txtCorreo.text = it.correoUserperfil
+                    if (!it.imagenUserperfil.isNullOrEmpty()) {
+                        binding.ivFotoPerfil.load(it.imagenUserperfil) {
+                            placeholder(R.drawable.ic_persona)
+                            error(R.drawable.ic_persona)
+                        }
+                    }
+
                 }
             }
         } else {
@@ -53,10 +61,18 @@ class PerfilUsuario : AppCompatActivity() {
                 usuario?.let {
                     binding.txtNombre.text = "${it.nombre} ${it.apellido}"
                     binding.txtTelefono.text = it.telefono
+                    if (!it.imagenUserperfil.isNullOrEmpty()) {
+                        binding.ivFotoPerfil.load(it.imagenUserperfil) {
+                            placeholder(R.drawable.ic_persona)
+                            error(R.drawable.ic_persona)
+                        }
+                    }
+
                 }
             }
             usuarioViewModel.perfilColaborador.observe(this) { perfil ->
                 perfil?.let {
+                    binding.txtCorreo.text = it.correoUserperfil
                     binding.txtCategoria.text = it.categoriaUserperfil
                     binding.txtEspecialidad.text = it.especialidadUserperfil
                     binding.txtTarifa.text = it.puntajeUserperfil.toString()

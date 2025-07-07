@@ -1,5 +1,6 @@
 package com.example.my_app_project.domain.repository
 
+import android.net.Uri
 import com.example.my_app_project.domain.model.Usuario
 import com.example.my_app_project.domain.model.UsuarioPerfil
 
@@ -17,4 +18,8 @@ interface UserRepository {
     suspend fun obtenerUsuLogin(): Usuario?
     fun verificarSiTienePerfil(uid: String, callback: (Boolean) -> Unit)
     suspend fun obtenerPerfilPorUid(uid: String): UsuarioPerfil?
+
+    suspend fun subirFotoPerfil(uid: String, uri: Uri): String?
+    suspend fun guardarUsuarioConFoto(usuario: Usuario, urlFoto: String)
+
 }
