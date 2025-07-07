@@ -26,7 +26,12 @@
     <fragment
         android:id="@+id/solicitarServicioFragment"
         android:name="com.example.my_app_project.ui.fragment.SolicitarServicioFragment"
-        android:label="Solictar Servicio"/>
+        android:label="Solictar Servicio">
+        <action
+            android:id="@+id/action_solicitarServicio_to_history"
+            app:destination="@+id/historyFragment"/>
+
+    </fragment>
 
     <fragment
         android:id="@+id/notificationsFragment"

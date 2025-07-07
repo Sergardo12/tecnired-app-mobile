@@ -15,6 +15,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.my_app_project.BuildConfig
 import com.example.my_app_project.R
 import com.example.my_app_project.databinding.FragmentSolicitarServicioBinding
@@ -256,6 +257,8 @@ class SolicitarServicioFragment : Fragment(), OnMapReadyCallback {
                 viewModel.crearNotificacionesDesdeServiciosPendientes()
                 solicitudViewModel.limpiarEstado()
                 limpiarCampos()
+                findNavController().navigate(R.id.action_solicitarServicio_to_history)
+
             }?.onFailure {
                 Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_LONG).show()
                 solicitudViewModel.limpiarEstado()
