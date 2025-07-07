@@ -35,7 +35,7 @@
             android:id="@+id/btnEnviarComentario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
+            android:src="@drawable/ic_send2"
             android:contentDescription="Enviar comentario"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginStart="8dp" />
