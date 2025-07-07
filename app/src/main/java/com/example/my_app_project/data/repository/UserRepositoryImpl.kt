@@ -42,6 +42,7 @@ class UserRepositoryImpl @Inject constructor(
         publicoRef.update(
             mapOf(
                 "nombreUserperfil" to usuario.nombre,
+                "apellidoUserperfil" to usuario.apellido,
                 "numeroUserperfil" to usuario.telefono
             )
         ).addOnFailureListener {
@@ -104,6 +105,7 @@ class UserRepositoryImpl @Inject constructor(
             "especialidadUserperfil" to perfil.especialidadUserperfil,
             "imagenUserperfil" to perfil.imagenUserperfil,
             "nombreUserperfil" to perfil.nombreUserperfil,
+            "apellidoUserperfil" to perfil.apellidoUserperfil,
             "numeroUserperfil" to perfil.numeroUserperfil,
             "descripcionUserperfil" to perfil.descripcionUserperfil,
             "horarioUserperfil" to perfil.horarioUserperfil,
@@ -153,6 +155,7 @@ class UserRepositoryImpl @Inject constructor(
                 especialidadUserperfil = snapshot.getString("especialidadUserperfil") ?: "",
                 imagenUserperfil = snapshot.getString("imagenUserperfil") ?: "",
                 nombreUserperfil = snapshot.getString("nombreUserperfil") ?: "",
+                apellidoUserperfil = snapshot.getString("apellidoUserperfil") ?: "",
                 descripcionUserperfil = snapshot.getString("descripcionUserperfil") ?: "",
                 horarioUserperfil = snapshot.getString("horarioUserperfil") ?: "",
                 numeroUserperfil = snapshot.getString("numeroUserperfil") ?: "",
@@ -192,6 +195,7 @@ class UserRepositoryImpl @Inject constructor(
                 especialidadUserperfil = snapshot.getString("especialidadUserperfil") ?: "",
                 imagenUserperfil = snapshot.getString("imagenUserperfil") ?: "",
                 nombreUserperfil = snapshot.getString("nombreUserperfil") ?: "",
+                apellidoUserperfil = snapshot.getString("apellidoUserperfil") ?: "",
                 descripcionUserperfil = snapshot.getString("descripcionUserperfil") ?: "",
                 horarioUserperfil = snapshot.getString("horarioUserperfil") ?: "",
                 numeroUserperfil = snapshot.getString("numeroUserperfil") ?: "",
@@ -237,6 +241,7 @@ class UserRepositoryImpl @Inject constructor(
         publicoRef.set(
             mapOf(
                 "nombreUserperfil" to usuario.nombre,
+                "apellidoUserperfil" to usuario.apellido,
                 "numeroUserperfil" to usuario.telefono,
                 "imagenUserperfil" to urlFoto
             ),
