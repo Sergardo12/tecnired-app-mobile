@@ -27,4 +27,38 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 Log.e("FCM", "Error al guardar token: ${it.message}")
             }
     }
+
+    override fun onMessageReceived(remoteMessage: com.google.firebase.messaging.RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        val title = remoteMessage.notification?.title ?: "Notificación"
+        val body = remoteMessage.notification?.body ?: "Tienes una nueva notificación"
+
+        mostrarNotificacion(title, body)
+    }
+
+    private fun mostrarNotificacion(titulo: String, mensaje: String) {
+        val canalId = "canal_general"
+        val manager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+
+        // Crear canal (Android 8+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val canal = android.app.NotificationChannel(
+                canalId,
+                "Canal General",
+                android.app.NotificationManager.IMPORTANCE_HIGH
+            )
+            manager.createNotificationChannel(canal)
+        }
+
+        val notification = androidx.core.app.NotificationCompat.Builder(this, canalId)
+            .setSmallIcon(com.example.my_app_project.R.drawable.ic_favorite_filled2)
+            .setContentTitle(titulo)
+            .setContentText(mensaje)
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        manager.notify(1, notification)
+    }
 }

@@ -4,6 +4,7 @@ data class Usuario(
     val nombre: String = "",
     val apellido: String = "",
     val telefono: String = "",
+    val imagenUserperfil: String = "",
     val rol: String = ""
 )
 

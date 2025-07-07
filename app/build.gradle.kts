@@ -105,6 +105,8 @@ dependencies {
 
 
     implementation ("com.google.firebase:firebase-messaging:23.4.")
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
+    implementation ("io.coil-kt:coil:2.4.0")
 
     //Pra subir imagenes
     implementation("com.google.firebase:firebase-storage-ktx")

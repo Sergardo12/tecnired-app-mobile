@@ -1,6 +1,7 @@
 package com.example.my_app_project.ui.adapter
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,8 @@ class HistorialAdapter(
     private val rolUsuario: String,
     private val onEliminarClick: (HistorialItem) -> Unit,
     private val onActualizarEstado: (String, String) -> Unit,
-    private val onCalificar: (String, Int) -> Unit
+    private val onCalificar: (String, Int) -> Unit,
+    private val onChatClick: (HistorialItem) -> Unit
 ) : RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
 
     private var listaHistorial = listOf<HistorialItem>()
@@ -42,6 +44,7 @@ class HistorialAdapter(
         private val btnDetalles: ImageButton = itemView.findViewById(R.id.btnDetalles)
         private val btnReiniciar: ImageButton = itemView.findViewById(R.id.btnReiniciar)
         private val btnCalificar: ImageButton = itemView.findViewById(R.id.btnCalificar)
+        private val btnChat: ImageButton = itemView.findViewById(R.id.btnChat)
 
         fun bind(item: HistorialItem) {
             txtNombre.text = item.nombreCliente
@@ -69,6 +72,13 @@ class HistorialAdapter(
                 item.estado.equals("aceptado", ignoreCase = true) && rolUsuario == "colaborador" -> View.VISIBLE
                 else -> View.GONE
             }
+            btnChat.visibility = when {
+                item.estado.equals("aceptado", ignoreCase = true) -> View.VISIBLE
+                else -> View.GONE
+            }
+            btnChat.setOnClickListener {
+                onChatClick(item)
+            }
             btnCalificar.visibility = when {
                 item.estado.equals("finalizado", ignoreCase = true) && rolUsuario == "cliente" -> View.VISIBLE
                 else -> View.GONE
@@ -92,7 +102,6 @@ class HistorialAdapter(
                     .setNegativeButton("Cancelar", null)
                     .show()
             }
-
             btnDetalles.setOnClickListener { view ->
                 if (rolUsuario.equals("colaborador", ignoreCase = true) &&
                     item.estado.equals("aceptado", ignoreCase = true)) {

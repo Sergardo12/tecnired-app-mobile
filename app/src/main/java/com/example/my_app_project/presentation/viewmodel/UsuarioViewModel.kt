@@ -1,5 +1,6 @@
 package com.example.my_app_project.presentation.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +8,7 @@ import androidx.lifecycle.LiveData
 import com.example.my_app_project.data.repository.UserRepositoryImpl
 import com.example.my_app_project.domain.model.Usuario
 import com.example.my_app_project.domain.model.UsuarioPerfil
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -74,6 +76,20 @@ class UsuarioViewModel @Inject constructor(
             _perfilColaborador.value = userRepository.obtenerPerfilPorUid(uid)
         }
     }
+
+    fun guardarUsuarioConFoto(uri: Uri, usuario: Usuario, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+            val url = userRepository.subirFotoPerfil(uid, uri)
+            if (url != null) {
+                userRepository.guardarUsuarioConFoto(usuario, url)
+                onResult(true)
+            } else {
+                onResult(false)
+            }
+        }
+    }
+
 
 
 }

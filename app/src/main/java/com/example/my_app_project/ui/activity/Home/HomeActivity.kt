@@ -44,13 +44,19 @@ class HomeActivity : AppCompatActivity() {
 
         userviewModel.cargarUsuario()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                 1001
             )
         }
+
 
 
         val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
